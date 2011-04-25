@@ -16,11 +16,16 @@ import java.io.File;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.ModelBuildingException;
+import org.sonatype.aether.collection.DependencyCollectionException;
+import org.sonatype.aether.graph.DependencyNode;
 
 public interface MavenBridge
 {
 
     Model buildModel( File pom, Repository... repositories )
         throws ModelBuildingException;
+
+    DependencyNode buildDependencyTree( Model model )
+        throws DependencyCollectionException;
 
 }
