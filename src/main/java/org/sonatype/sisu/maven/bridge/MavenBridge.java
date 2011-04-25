@@ -25,7 +25,7 @@ public interface MavenBridge
     Model buildModel( File pom, Repository... repositories )
         throws ModelBuildingException;
 
-    DependencyNode buildDependencyTree( Model model )
+    DependencyNode buildDependencyTree( Model model, Repository... repositories )
         throws DependencyCollectionException;
 
 }

@@ -117,18 +117,23 @@ class DefaultMavenBridge
         return model;
     }
 
-    public DependencyNode buildDependencyTree( Model model )
+    public DependencyNode buildDependencyTree( Model model, Repository... repositories )
         throws DependencyCollectionException
     {
         CollectRequest request = new CollectRequest();
         request.setRequestContext( "project" );
+        List<RemoteRepository> requestRepos = new ArrayList<RemoteRepository>();
+        List<RemoteRepository> pomRepos = new ArrayList<RemoteRepository>();
+        for ( Repository repo : repositories )
+        {
+            requestRepos.add( toRemoteRepository( repo ) );
+        }
         for ( Repository repo : model.getRepositories() )
         {
-            request.addRepository( toRemoteRepository( repo ) );
+            pomRepos.add( toRemoteRepository( repo ) );
         }
-        request.setRepositories( remoteRepositoryManager.aggregateRepositories( repositorySession,
-                                                                                Collections.<RemoteRepository> emptyList(),
-                                                                                request.getRepositories(), true ) );
+        request.setRepositories( remoteRepositoryManager.aggregateRepositories( repositorySession, requestRepos,
+                                                                                pomRepos, true ) );
         ArtifactTypeRegistry stereotypes = repositorySession.getArtifactTypeRegistry();
         for ( org.apache.maven.model.Dependency dep : model.getDependencies() )
         {
