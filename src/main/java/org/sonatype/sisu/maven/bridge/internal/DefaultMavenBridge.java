@@ -32,7 +32,6 @@ import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuildingResult;
 import org.apache.maven.model.resolution.InvalidRepositoryException;
 import org.apache.maven.model.resolution.ModelResolver;
-import org.apache.maven.repository.internal.ArtifactDescriptorUtils;
 import org.slf4j.Logger;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
@@ -46,6 +45,7 @@ import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.Exclusion;
 import org.sonatype.aether.impl.RemoteRepositoryManager;
 import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.repository.RepositoryPolicy;
 import org.sonatype.aether.util.artifact.ArtifactProperties;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.DefaultArtifactType;
@@ -124,7 +124,7 @@ class DefaultMavenBridge
         request.setRequestContext( "project" );
         for ( Repository repo : model.getRepositories() )
         {
-            request.addRepository( ArtifactDescriptorUtils.toRemoteRepository( repo ) );
+            request.addRepository( toRemoteRepository( repo ) );
         }
         request.setRepositories( remoteRepositoryManager.aggregateRepositories( repositorySession,
                                                                                 Collections.<RemoteRepository> emptyList(),
@@ -143,6 +143,37 @@ class DefaultMavenBridge
         }
 
         return repositorySystem.collectDependencies( repositorySession, request ).getRoot();
+    }
+
+    private RemoteRepository toRemoteRepository( Repository repository )
+    {
+        RemoteRepository result =
+            new RemoteRepository( repository.getId(), repository.getLayout(), repository.getUrl() );
+        result.setPolicy( true, toRepositoryPolicy( repository.getSnapshots() ) );
+        result.setPolicy( false, toRepositoryPolicy( repository.getReleases() ) );
+        return result;
+    }
+
+    private RepositoryPolicy toRepositoryPolicy( org.apache.maven.model.RepositoryPolicy policy )
+    {
+        boolean enabled = true;
+        String checksums = RepositoryPolicy.CHECKSUM_POLICY_WARN;
+        String updates = RepositoryPolicy.UPDATE_POLICY_DAILY;
+
+        if ( policy != null )
+        {
+            enabled = policy.isEnabled();
+            if ( policy.getUpdatePolicy() != null )
+            {
+                updates = policy.getUpdatePolicy();
+            }
+            if ( policy.getChecksumPolicy() != null )
+            {
+                checksums = policy.getChecksumPolicy();
+            }
+        }
+
+        return new RepositoryPolicy( enabled, updates, checksums );
     }
 
     private Dependency toDependency( org.apache.maven.model.Dependency dependency, ArtifactTypeRegistry stereotypes )
