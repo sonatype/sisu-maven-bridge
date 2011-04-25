@@ -44,6 +44,8 @@ import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.Exclusion;
+import org.sonatype.aether.impl.RemoteRepositoryManager;
+import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.util.artifact.ArtifactProperties;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.DefaultArtifactType;
@@ -63,12 +65,14 @@ class DefaultMavenBridge
 
     private final RepositorySystemSession repositorySession;
 
+    private final RemoteRepositoryManager remoteRepositoryManager;
+
     @Inject
     private Logger logger;
 
     @Inject
     DefaultMavenBridge( ModelResolver modelResolver, RepositorySystem repositorySystem,
-                        RepositorySystemSession repositorySession )
+                        RepositorySystemSession repositorySession, RemoteRepositoryManager remoteRepositoryManager )
     {
         this.modelResolver = modelResolver;
 
@@ -77,6 +81,8 @@ class DefaultMavenBridge
         this.repositorySystem = repositorySystem;
 
         this.repositorySession = repositorySession;
+
+        this.remoteRepositoryManager = remoteRepositoryManager;
     }
 
     public Model buildModel( File pom, Repository... repositories )
@@ -120,6 +126,9 @@ class DefaultMavenBridge
         {
             request.addRepository( ArtifactDescriptorUtils.toRemoteRepository( repo ) );
         }
+        request.setRepositories( remoteRepositoryManager.aggregateRepositories( repositorySession,
+                                                                                Collections.<RemoteRepository> emptyList(),
+                                                                                request.getRepositories(), true ) );
         ArtifactTypeRegistry stereotypes = repositorySession.getArtifactTypeRegistry();
         for ( org.apache.maven.model.Dependency dep : model.getDependencies() )
         {
