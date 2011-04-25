@@ -90,17 +90,17 @@
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-api</artifactId>
-      <version>1.11</version>
+      <version>1.8.1</version>
     </dependency>
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-util</artifactId>
-      <version>1.11</version>
+      <version>1.8.1</version>
     </dependency>
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-impl</artifactId>
-      <version>1.11</version>
+      <version>1.8.1</version>
     </dependency>
 
   </dependencies>
