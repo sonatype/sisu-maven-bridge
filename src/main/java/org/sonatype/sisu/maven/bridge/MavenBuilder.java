@@ -19,15 +19,16 @@ public class MavenBuilder
 
     public static Repository repository( final String id, final String url )
     {
-        Repository repository = new Repository();
+        final Repository repository = new Repository();
         repository.setId( id );
         repository.setLayout( "default" );
         repository.setUrl( url );
 
-        RepositoryPolicy policy = new RepositoryPolicy();
+        final RepositoryPolicy policy = new RepositoryPolicy();
         policy.setChecksumPolicy( "warn" );
         policy.setEnabled( true );
         policy.setUpdatePolicy( "always" );
+
         repository.setReleases( policy );
         repository.setSnapshots( policy );
 

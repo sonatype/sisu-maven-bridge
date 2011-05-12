@@ -12,6 +12,7 @@
 package org.sonatype.sisu.maven.bridge;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
@@ -23,6 +24,9 @@ public interface MavenBridge
 {
 
     Model buildModel( File pom, Repository... repositories )
+        throws ModelBuildingException;
+
+    Model buildModel( File pom, Map<String, String> repositories )
         throws ModelBuildingException;
 
     DependencyNode buildDependencyTree( Model model, Repository... repositories )
