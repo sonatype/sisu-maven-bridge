@@ -33,6 +33,8 @@ package org.sonatype.sisu.maven.bridge.resolvers;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.maven.model.resolution.ModelResolver;
+
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.impl.RemoteRepositoryManager;
@@ -40,6 +42,7 @@ import org.sonatype.aether.impl.RemoteRepositoryManager;
 @Singleton
 public class EmptyRemoteModelResolver
     extends RemoteModelResolver
+    implements ModelResolver
 {
 
     @Inject
