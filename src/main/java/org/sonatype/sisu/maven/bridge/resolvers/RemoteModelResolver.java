@@ -83,7 +83,6 @@ public class RemoteModelResolver
         repositoryIds = new HashSet<String>();
     }
 
-    @Inject
     public RemoteModelResolver( final RepositorySystem repositorySystem, final RepositorySystemSession session,
                                 final RemoteRepositoryManager remoteRepositoryManager )
     {
