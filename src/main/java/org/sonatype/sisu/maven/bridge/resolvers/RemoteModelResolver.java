@@ -31,6 +31,7 @@ package org.sonatype.sisu.maven.bridge.resolvers;
  */
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -71,26 +72,34 @@ public class RemoteModelResolver
     private final Set<String> repositoryIds;
 
     @Inject
-    public RemoteModelResolver( RepositorySystem repositorySystem, RepositorySystemSession session,
-                                RemoteRepositoryManager remoteRepositoryManager, List<RemoteRepository> repositories )
+    public RemoteModelResolver( final RepositorySystem repositorySystem, final RepositorySystemSession session,
+                                final RemoteRepositoryManager remoteRepositoryManager,
+                                final List<RemoteRepository> repositories )
     {
         this.session = session;
         this.repositorySystem = repositorySystem;
         this.remoteRepositoryManager = remoteRepositoryManager;
-        this.repositories = repositories;
-        this.repositoryIds = new HashSet<String>();
+        this.repositories = repositories == null ? new ArrayList<RemoteRepository>() : repositories;
+        repositoryIds = new HashSet<String>();
     }
 
-    private RemoteModelResolver( RemoteModelResolver original )
+    @Inject
+    public RemoteModelResolver( final RepositorySystem repositorySystem, final RepositorySystemSession session,
+                                final RemoteRepositoryManager remoteRepositoryManager )
     {
-        this.session = original.session;
-        this.repositorySystem = original.repositorySystem;
-        this.remoteRepositoryManager = original.remoteRepositoryManager;
-        this.repositories = original.repositories;
-        this.repositoryIds = new HashSet<String>( original.repositoryIds );
+        this( repositorySystem, session, remoteRepositoryManager, null );
     }
 
-    public void addRepository( Repository repository )
+    private RemoteModelResolver( final RemoteModelResolver original )
+    {
+        session = original.session;
+        repositorySystem = original.repositorySystem;
+        remoteRepositoryManager = original.remoteRepositoryManager;
+        repositories = original.repositories;
+        repositoryIds = new HashSet<String>( original.repositoryIds );
+    }
+
+    public void addRepository( final Repository repository )
         throws InvalidRepositoryException
     {
         if ( !repositoryIds.add( repository.getId() ) )
@@ -98,10 +107,9 @@ public class RemoteModelResolver
             return;
         }
 
-        List<RemoteRepository> newRepositories = Collections.singletonList( convert( repository ) );
+        final List<RemoteRepository> newRepositories = Collections.singletonList( convert( repository ) );
 
-        this.repositories =
-            remoteRepositoryManager.aggregateRepositories( session, repositories, newRepositories, true );
+        repositories = remoteRepositoryManager.aggregateRepositories( session, repositories, newRepositories, true );
     }
 
     public ModelResolver newCopy()
@@ -109,36 +117,36 @@ public class RemoteModelResolver
         return new RemoteModelResolver( this );
     }
 
-    public ModelSource resolveModel( String groupId, String artifactId, String version )
+    public ModelSource resolveModel( final String groupId, final String artifactId, final String version )
         throws UnresolvableModelException
     {
         Artifact pomArtifact = new DefaultArtifact( groupId, artifactId, "", "pom", version );
 
         try
         {
-            ArtifactRequest request = new ArtifactRequest( pomArtifact, repositories, null );
+            final ArtifactRequest request = new ArtifactRequest( pomArtifact, repositories, null );
             pomArtifact = repositorySystem.resolveArtifact( session, request ).getArtifact();
         }
-        catch ( ArtifactResolutionException e )
+        catch ( final ArtifactResolutionException e )
         {
             throw new UnresolvableModelException( e.getMessage(), groupId, artifactId, version, e );
         }
 
-        File pomFile = pomArtifact.getFile();
+        final File pomFile = pomArtifact.getFile();
 
         return new FileModelSource( pomFile );
     }
 
-    static RemoteRepository convert( Repository repository )
+    static RemoteRepository convert( final Repository repository )
     {
-        RemoteRepository result =
+        final RemoteRepository result =
             new RemoteRepository( repository.getId(), repository.getLayout(), repository.getUrl() );
         result.setPolicy( true, convert( repository.getSnapshots() ) );
         result.setPolicy( false, convert( repository.getReleases() ) );
         return result;
     }
 
-    private static RepositoryPolicy convert( org.apache.maven.model.RepositoryPolicy policy )
+    private static RepositoryPolicy convert( final org.apache.maven.model.RepositoryPolicy policy )
     {
         boolean enabled = true;
         String checksums = RepositoryPolicy.CHECKSUM_POLICY_WARN;
