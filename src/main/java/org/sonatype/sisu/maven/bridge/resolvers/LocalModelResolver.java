@@ -20,7 +20,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.maven.model.resolution.ModelResolver;
-import org.sonatype.sisu.maven.bridge.internal.LocalModelResolverBase;
 
 /**
  * A model resolver that resolves POMs from a local copy of a Maven remote repository using the default layout.

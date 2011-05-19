@@ -30,6 +30,7 @@ import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuildingResult;
+import org.apache.maven.model.building.ModelSource;
 import org.apache.maven.model.resolution.InvalidRepositoryException;
 import org.apache.maven.model.resolution.ModelResolver;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ import org.sonatype.aether.repository.RepositoryPolicy;
 import org.sonatype.aether.util.artifact.ArtifactProperties;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.DefaultArtifactType;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenBridge;
 import org.sonatype.sisu.maven.bridge.MavenBuilder;
 
@@ -57,10 +59,7 @@ import org.sonatype.sisu.maven.bridge.MavenBuilder;
 class DefaultMavenBridge
     implements MavenBridge
 {
-
     private final ModelBuilder modelBuilder;
-
-    private final ModelResolver modelResolver;
 
     private final RepositorySystem repositorySystem;
 
@@ -68,17 +67,19 @@ class DefaultMavenBridge
 
     private final RemoteRepositoryManager remoteRepositoryManager;
 
+    private final ModelResolverFactory modelResolverFactory;
+
     @Inject
     private Logger logger;
 
     @Inject
-    DefaultMavenBridge( final ModelResolver modelResolver, final RepositorySystem repositorySystem,
-                        final RepositorySystemSession repositorySession,
+    DefaultMavenBridge( final ModelResolverFactory modelResolverFactory, final RepositorySystem repositorySystem,
+                        @Nullable final RepositorySystemSession repositorySession,
                         final RemoteRepositoryManager remoteRepositoryManager )
     {
-        this.modelResolver = modelResolver;
+        this.modelResolverFactory = modelResolverFactory;
 
-        modelBuilder = new DefaultModelBuilderFactory().newInstance();
+        this.modelBuilder = new DefaultModelBuilderFactory().newInstance();
 
         this.repositorySystem = repositorySystem;
 
@@ -87,10 +88,13 @@ class DefaultMavenBridge
         this.remoteRepositoryManager = remoteRepositoryManager;
     }
 
-    public Model buildModel( final File pom, final Repository... repositories )
+    // ==
+
+    public Model buildModel( final RepositorySystemSession session, final ModelSource pom,
+                             final Repository... repositories )
         throws ModelBuildingException
     {
-        final ModelResolver mr = modelResolver.newCopy();
+        final ModelResolver mr = modelResolverFactory.getModelResolver( session );
         if ( repositories != null )
         {
             for ( final Repository repository : repositories )
@@ -107,7 +111,7 @@ class DefaultMavenBridge
         }
 
         final ModelBuildingRequest modelRequest = new DefaultModelBuildingRequest();
-        modelRequest.setModelSource( new FileModelSource( pom ) );
+        modelRequest.setModelSource( pom );
         modelRequest.setSystemProperties( System.getProperties() );
         modelRequest.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
         modelRequest.setLocationTracking( false );
@@ -119,7 +123,8 @@ class DefaultMavenBridge
         return model;
     }
 
-    public Model buildModel( final File pom, final Map<String, String> repositories )
+    public Model buildModel( final RepositorySystemSession session, final ModelSource pom,
+                             final Map<String, String> repositories )
         throws ModelBuildingException
     {
         if ( repositories == null )
@@ -136,7 +141,26 @@ class DefaultMavenBridge
         return buildModel( pom, repos );
     }
 
-    public DependencyNode buildDependencyTree( final Model model, final Repository... repositories )
+    public DependencyNode buildDependencyTree( final RepositorySystemSession session, final Dependency node,
+                                               final Repository... repositories )
+        throws DependencyCollectionException
+    {
+        final CollectRequest request = new CollectRequest();
+        request.setRequestContext( "project" );
+        final List<RemoteRepository> requestRepos = new ArrayList<RemoteRepository>();
+        for ( final Repository repo : repositories )
+        {
+            requestRepos.add( toRemoteRepository( repo ) );
+        }
+        request.setRepositories( remoteRepositoryManager.aggregateRepositories( session, requestRepos,
+            new ArrayList<RemoteRepository>(), true ) );
+        request.setRoot( node );
+
+        return repositorySystem.collectDependencies( session, request ).getRoot();
+    }
+
+    public DependencyNode buildDependencyTree( final RepositorySystemSession session, final Model model,
+                                               final Repository... repositories )
         throws DependencyCollectionException
     {
         final CollectRequest request = new CollectRequest();
@@ -151,9 +175,8 @@ class DefaultMavenBridge
         {
             pomRepos.add( toRemoteRepository( repo ) );
         }
-        request.setRepositories( remoteRepositoryManager.aggregateRepositories( repositorySession, requestRepos,
-            pomRepos, true ) );
-        final ArtifactTypeRegistry stereotypes = repositorySession.getArtifactTypeRegistry();
+        request.setRepositories( remoteRepositoryManager.aggregateRepositories( session, requestRepos, pomRepos, true ) );
+        final ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
         for ( final org.apache.maven.model.Dependency dep : model.getDependencies() )
         {
             request.addDependency( toDependency( dep, stereotypes ) );
@@ -166,8 +189,48 @@ class DefaultMavenBridge
             }
         }
 
-        return repositorySystem.collectDependencies( repositorySession, request ).getRoot();
+        return repositorySystem.collectDependencies( session, request ).getRoot();
     }
+
+    // ==
+
+    public Model buildModel( final ModelSource pom, final Repository... repositories )
+        throws ModelBuildingException
+    {
+        return buildModel( repositorySession, pom, repositories );
+    }
+
+    public Model buildModel( final File pom, final Repository... repositories )
+        throws ModelBuildingException
+    {
+        return buildModel( new FileModelSource( pom ), repositories );
+    }
+
+    public Model buildModel( final ModelSource pom, final Map<String, String> repositories )
+        throws ModelBuildingException
+    {
+        return buildModel( repositorySession, pom, repositories );
+    }
+
+    public Model buildModel( final File pom, final Map<String, String> repositories )
+        throws ModelBuildingException
+    {
+        return buildModel( new FileModelSource( pom ), repositories );
+    }
+
+    public DependencyNode buildDependencyTree( final Dependency node, final Repository... repositories )
+        throws DependencyCollectionException
+    {
+        return buildDependencyTree( repositorySession, node, repositories );
+    }
+
+    public DependencyNode buildDependencyTree( final Model model, final Repository... repositories )
+        throws DependencyCollectionException
+    {
+        return buildDependencyTree( repositorySession, model, repositories );
+    }
+
+    // ==
 
     private RemoteRepository toRemoteRepository( final Repository repository )
     {
