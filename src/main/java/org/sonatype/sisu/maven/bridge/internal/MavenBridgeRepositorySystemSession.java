@@ -143,31 +143,23 @@ public class MavenBridgeRepositorySystemSession
     }
 
     @Inject
-    public MavenBridgeRepositorySystemSession setLocalRepository(
-        final @Nullable @Named( LOCAL_REPOSITORY_DIR ) File localRepository )
+    public void setLocalRepository( final @Nullable @Named( LOCAL_REPOSITORY_DIR ) File localRepository )
     {
         setLocalRepositoryManager( repositorySystem.newLocalRepositoryManager( new LocalRepository(
             localRepository == null ? new File( MAVEN_USER_HOME, "repository" ) : localRepository ) )
         );
-        return this;
     }
 
-    @Override
     @Inject
-    public MavenBridgeRepositorySystemSession setUpdatePolicy(
-        final @Named( "${" + UPDATE_POLICY + ":-daily}" ) String updatePolicy )
+    void injectUpdatePolicy( final @Named( "${" + UPDATE_POLICY + ":-daily}" ) String updatePolicy )
     {
         super.setUpdatePolicy( updatePolicy );
-        return this;
     }
 
-    @Override
     @Inject
-    public MavenBridgeRepositorySystemSession setChecksumPolicy(
-        final @Named( "${" + CHECKSUM_POLICY + ":-fail}" ) String checksumPolicy )
+    void injectChecksumPolicy( final @Named( "${" + CHECKSUM_POLICY + ":-fail}" ) String checksumPolicy )
     {
         super.setChecksumPolicy( checksumPolicy );
-        return this;
     }
 
     protected Logger log()
