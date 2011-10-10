@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -33,7 +32,6 @@ import org.apache.maven.model.building.ModelBuildingResult;
 import org.apache.maven.model.building.ModelSource;
 import org.apache.maven.model.resolution.InvalidRepositoryException;
 import org.apache.maven.model.resolution.ModelResolver;
-import org.slf4j.Logger;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
@@ -50,15 +48,16 @@ import org.sonatype.aether.repository.RepositoryPolicy;
 import org.sonatype.aether.util.artifact.ArtifactProperties;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.DefaultArtifactType;
-import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenBridge;
 import org.sonatype.sisu.maven.bridge.MavenBuilder;
 
 @Named
 @Singleton
 class DefaultMavenBridge
+    extends ComponentSupport
     implements MavenBridge
 {
+
     private final ModelBuilder modelBuilder;
 
     private final RepositorySystem repositorySystem;
@@ -70,22 +69,17 @@ class DefaultMavenBridge
     private final ModelResolverFactory modelResolverFactory;
 
     @Inject
-    private Logger logger;
-
-    @Inject
-    DefaultMavenBridge( final ModelResolverFactory modelResolverFactory, final RepositorySystem repositorySystem,
-                        @Nullable final RepositorySystemSession repositorySession,
+    DefaultMavenBridge( final ModelResolverFactory modelResolverFactory,
+                        final RepositorySystem repositorySystem,
+                        final MavenBridgeRepositorySystemSession repositorySession,
                         final RemoteRepositoryManager remoteRepositoryManager )
     {
         this.modelResolverFactory = modelResolverFactory;
+        this.repositorySystem = repositorySystem;
+        this.repositorySession = repositorySession;
+        this.remoteRepositoryManager = remoteRepositoryManager;
 
         this.modelBuilder = new DefaultModelBuilderFactory().newInstance();
-
-        this.repositorySystem = repositorySystem;
-
-        this.repositorySession = repositorySession;
-
-        this.remoteRepositoryManager = remoteRepositoryManager;
     }
 
     // ==
@@ -105,7 +99,7 @@ class DefaultMavenBridge
                 }
                 catch ( final InvalidRepositoryException e )
                 {
-                    logger.warn( String.format( "Could not use repository [%s]", repository.getUrl() ), e );
+                    log().warn( String.format( "Could not use repository [%s]", repository.getUrl() ), e );
                 }
             }
         }
@@ -153,7 +147,8 @@ class DefaultMavenBridge
             requestRepos.add( toRemoteRepository( repo ) );
         }
         request.setRepositories( remoteRepositoryManager.aggregateRepositories( session, requestRepos,
-            new ArrayList<RemoteRepository>(), true ) );
+                                                                                new ArrayList<RemoteRepository>(),
+                                                                                true ) );
         request.setRoot( node );
 
         return repositorySystem.collectDependencies( session, request ).getRoot();
@@ -175,7 +170,8 @@ class DefaultMavenBridge
         {
             pomRepos.add( toRemoteRepository( repo ) );
         }
-        request.setRepositories( remoteRepositoryManager.aggregateRepositories( session, requestRepos, pomRepos, true ) );
+        request.setRepositories(
+            remoteRepositoryManager.aggregateRepositories( session, requestRepos, pomRepos, true ) );
         final ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
         for ( final org.apache.maven.model.Dependency dep : model.getDependencies() )
         {
@@ -282,7 +278,7 @@ class DefaultMavenBridge
 
         final Artifact artifact =
             new DefaultArtifact( dependency.getGroupId(), dependency.getArtifactId(), dependency.getClassifier(), null,
-                dependency.getVersion(), props, stereotype );
+                                 dependency.getVersion(), props, stereotype );
 
         final List<Exclusion> exclusions = new ArrayList<Exclusion>( dependency.getExclusions().size() );
         for ( final org.apache.maven.model.Exclusion exclusion : dependency.getExclusions() )
@@ -290,7 +286,8 @@ class DefaultMavenBridge
             exclusions.add( toExclusion( exclusion ) );
         }
 
-        final Dependency result = new Dependency( artifact, dependency.getScope(), dependency.isOptional(), exclusions );
+        final Dependency result =
+            new Dependency( artifact, dependency.getScope(), dependency.isOptional(), exclusions );
 
         return result;
     }
