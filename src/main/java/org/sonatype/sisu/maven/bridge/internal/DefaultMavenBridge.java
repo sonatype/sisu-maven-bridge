@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
+import javax.inject.Provider;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
@@ -52,7 +52,6 @@ import org.sonatype.sisu.maven.bridge.MavenBridge;
 import org.sonatype.sisu.maven.bridge.MavenBuilder;
 
 @Named
-@Singleton
 class DefaultMavenBridge
     extends ComponentSupport
     implements MavenBridge
@@ -295,6 +294,22 @@ class DefaultMavenBridge
     private Exclusion toExclusion( final org.apache.maven.model.Exclusion exclusion )
     {
         return new Exclusion( exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*" );
+    }
+
+    @Named
+    static class MavenBridgeProvider
+        implements Provider<MavenBridge>
+    {
+
+        @Inject
+        private DefaultMavenBridge instance;
+
+        @Override
+        public MavenBridge get()
+        {
+            return instance;
+        }
+
     }
 
 }
