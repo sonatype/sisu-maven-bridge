@@ -254,17 +254,17 @@ public class DefaultMavenSettings
         final List<org.apache.maven.settings.Proxy> proxies = settings.getProxies();
         if ( proxies != null && proxies.size() > 0 )
         {
-            final DefaultProxySelector proxySelector = new DefaultProxySelector();
+            final DefaultProxySelector ps = new DefaultProxySelector();
             for ( org.apache.maven.settings.Proxy proxy : proxies )
             {
-                proxySelector.add(
+                ps.add(
                     new org.sonatype.aether.repository.Proxy(
                         proxy.getProtocol(), proxy.getHost(), proxy.getPort(), new Authentication(
                         proxy.getUsername(), proxy.getPassword() )
                     ), proxy.getNonProxyHosts()
                 );
             }
-            return proxySelector;
+            return ps;
         }
         return null;
     }
