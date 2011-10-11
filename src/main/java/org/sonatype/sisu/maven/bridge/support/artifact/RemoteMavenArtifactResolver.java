@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.sonatype.sisu.maven.bridge.support.artifact;
 
+import java.io.File;
 import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,11 +20,15 @@ import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.impl.RemoteRepositoryManager;
+import org.sonatype.aether.repository.LocalRepository;
+import org.sonatype.aether.repository.LocalRepositoryManager;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
+import org.sonatype.sisu.maven.bridge.Names;
+import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.artifact.internal.MavenArtifactResolverSupport;
 
 @Singleton
@@ -55,7 +60,28 @@ public class RemoteMavenArtifactResolver
                 session, Collections.<RemoteRepository>emptyList(), artifactRequest.getRepositories(), RECESSIVE_IS_RAW
             )
         );
-        return repositorySystem.resolveArtifact( session, artifactRequest ).getArtifact();
+
+        RepositorySystemSession safeSession = session;
+        if ( session.getLocalRepositoryManager() == null || session.getLocalRepository() == null )
+        {
+            safeSession = new RepositorySystemSessionWrapper( session )
+            {
+                final LocalRepositoryManager lrm = repositorySystem.newLocalRepositoryManager(
+                    new LocalRepository( new File( Names.MAVEN_USER_HOME, "repository" ) )
+                );
+
+                public LocalRepositoryManager getLocalRepositoryManager()
+                {
+                    return lrm;
+                }
+
+                public LocalRepository getLocalRepository()
+                {
+                    return lrm.getRepository();
+                }
+            };
+        }
+        return repositorySystem.resolveArtifact( safeSession, artifactRequest ).getArtifact();
     }
 
 }

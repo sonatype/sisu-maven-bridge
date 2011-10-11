@@ -12,9 +12,6 @@
 package org.sonatype.sisu.maven.bridge.internal;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -109,111 +106,94 @@ public class DefaultMavenSettings
     @Override
     public RepositorySystemSession inject( final RepositorySystemSession session )
     {
-        return (RepositorySystemSession) Proxy.newProxyInstance(
-            this.getClass().getClassLoader(), new Class[]{ RepositorySystemSession.class },
-            new InvocationHandler()
+        return new RepositorySystemSessionWrapper( session )
+        {
+
+            public MirrorSelector getMirrorSelector()
             {
-                @Override
-                public Object invoke( final Object proxy, final Method method, final Object[] args )
-                    throws Throwable
+                return new MirrorSelector()
                 {
-                    try
+                    @Override
+                    public RemoteRepository getMirror( final RemoteRepository repository )
                     {
-                        final Method local = this.getClass().getDeclaredMethod(
-                            method.getName(), method.getParameterTypes()
-                        );
-                        return local.invoke( this, args );
-                    }
-                    catch ( NoSuchMethodException e )
-                    {
-                        final Method wrapped = session.getClass().getMethod(
-                            method.getName(), method.getParameterTypes()
-                        );
-                        return wrapped.invoke( session, args );
-                    }
-                }
-
-                public MirrorSelector getMirrorSelector()
-                {
-                    return new MirrorSelector()
-                    {
-                        @Override
-                        public RemoteRepository getMirror( final RemoteRepository repository )
+                        if ( mirrorSelector != null )
                         {
-                            if ( mirrorSelector != null )
+                            final RemoteRepository mirror = mirrorSelector.getMirror( repository );
+                            if ( mirror != null )
                             {
-                                final RemoteRepository mirror = mirrorSelector.getMirror( repository );
-                                if ( mirror != null )
-                                {
-                                    return mirror;
-                                }
+                                return mirror;
                             }
-                            return session.getMirrorSelector().getMirror( repository );
                         }
-                    };
-                }
-
-                public AuthenticationSelector getAuthenticationSelector()
-                {
-                    return new AuthenticationSelector()
-                    {
-                        @Override
-                        public Authentication getAuthentication( final RemoteRepository repository )
-                        {
-                            if ( authenticationSelector != null )
-                            {
-                                final Authentication auth = authenticationSelector.getAuthentication( repository );
-                                if ( auth != null )
-                                {
-                                    return auth;
-                                }
-                            }
-                            return session.getAuthenticationSelector().getAuthentication( repository );
-                        }
-                    };
-                }
-
-                public ProxySelector getProxySelector()
-                {
-                    return new ProxySelector()
-                    {
-                        @Override
-                        public org.sonatype.aether.repository.Proxy getProxy( final RemoteRepository repository )
-                        {
-                            if ( proxySelector != null )
-                            {
-                                final org.sonatype.aether.repository.Proxy proxy = proxySelector.getProxy( repository );
-                                if ( proxy != null )
-                                {
-                                    return proxy;
-                                }
-                            }
-                            return session.getProxySelector().getProxy( repository );
-                        }
-                    };
-                }
-
-                public LocalRepositoryManager getLocalRepositoryManager()
-                {
-                    final LocalRepositoryManager sessionLocalRepositoryManager = session.getLocalRepositoryManager();
-                    if ( sessionLocalRepositoryManager == null )
-                    {
-                        return localRepositoryManager;
+                        return session.getMirrorSelector().getMirror( repository );
                     }
-                    return sessionLocalRepositoryManager;
-                }
+                };
+            }
 
-                public LocalRepository getLocalRepository()
+            public AuthenticationSelector getAuthenticationSelector()
+            {
+                return new AuthenticationSelector()
                 {
-                    final LocalRepository repository = getLocalRepositoryManager().getRepository();
+                    @Override
+                    public Authentication getAuthentication( final RemoteRepository repository )
+                    {
+                        if ( authenticationSelector != null )
+                        {
+                            final Authentication auth = authenticationSelector.getAuthentication( repository );
+                            if ( auth != null )
+                            {
+                                return auth;
+                            }
+                        }
+                        return session.getAuthenticationSelector().getAuthentication( repository );
+                    }
+                };
+            }
+
+            public ProxySelector getProxySelector()
+            {
+                return new ProxySelector()
+                {
+                    @Override
+                    public org.sonatype.aether.repository.Proxy getProxy( final RemoteRepository repository )
+                    {
+                        if ( proxySelector != null )
+                        {
+                            final org.sonatype.aether.repository.Proxy proxy = proxySelector.getProxy( repository );
+                            if ( proxy != null )
+                            {
+                                return proxy;
+                            }
+                        }
+                        return session.getProxySelector().getProxy( repository );
+                    }
+                };
+            }
+
+            public LocalRepositoryManager getLocalRepositoryManager()
+            {
+                final LocalRepositoryManager sessionLocalRepositoryManager = session.getLocalRepositoryManager();
+                if ( sessionLocalRepositoryManager == null )
+                {
+                    return localRepositoryManager;
+                }
+                return sessionLocalRepositoryManager;
+            }
+
+            public LocalRepository getLocalRepository()
+            {
+                final LocalRepositoryManager manager = getLocalRepositoryManager();
+                LocalRepository repository = null;
+                if ( manager != null )
+                {
+                    repository = manager.getRepository();
                     if ( repository == null && localRepositoryManager != null )
                     {
                         return localRepositoryManager.getRepository();
                     }
-                    return repository;
                 }
+                return repository;
             }
-        );
+        };
     }
 
     private static Collection<RemoteRepository> getRepositories( final Settings settings )

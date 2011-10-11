@@ -143,11 +143,14 @@ public class MavenBridgeRepositorySystemSession
     }
 
     @Inject
-    public void setLocalRepository( final @Nullable @Named( "${" + LOCAL_REPOSITORY_DIR + "}" ) File localRepository )
+    public void setLocalRepository( final @Nullable @Named( LOCAL_REPOSITORY_DIR ) File localRepository )
     {
-        setLocalRepositoryManager( repositorySystem.newLocalRepositoryManager( new LocalRepository(
-            localRepository == null ? new File( MAVEN_USER_HOME, "repository" ) : localRepository ) )
-        );
+        if ( localRepository != null )
+        {
+            setLocalRepositoryManager( repositorySystem.newLocalRepositoryManager(
+                new LocalRepository( localRepository ) )
+            );
+        }
     }
 
     @Inject
