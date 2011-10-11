@@ -195,22 +195,22 @@ public class DefaultMavenSettings
 
                 public LocalRepositoryManager getLocalRepositoryManager()
                 {
-                    if ( localRepositoryManager == null )
+                    final LocalRepositoryManager sessionLocalRepositoryManager = session.getLocalRepositoryManager();
+                    if ( sessionLocalRepositoryManager == null )
                     {
-                        return session.getLocalRepositoryManager();
+                        return localRepositoryManager;
                     }
-
-                    return localRepositoryManager;
+                    return sessionLocalRepositoryManager;
                 }
 
                 public LocalRepository getLocalRepository()
                 {
-                    if ( localRepositoryManager == null )
+                    final LocalRepository repository = getLocalRepositoryManager().getRepository();
+                    if ( repository == null && localRepositoryManager != null )
                     {
-                        return session.getLocalRepository();
+                        return localRepositoryManager.getRepository();
                     }
-
-                    return localRepositoryManager.getRepository();
+                    return repository;
                 }
             }
         );
