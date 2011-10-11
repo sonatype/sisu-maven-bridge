@@ -30,9 +30,13 @@ import org.apache.maven.settings.building.SettingsBuilder;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.apache.maven.settings.building.SettingsBuildingRequest;
 import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.impl.internal.EnhancedLocalRepositoryManagerFactory;
 import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.AuthenticationSelector;
+import org.sonatype.aether.repository.LocalRepository;
+import org.sonatype.aether.repository.LocalRepositoryManager;
 import org.sonatype.aether.repository.MirrorSelector;
+import org.sonatype.aether.repository.NoLocalRepositoryManagerException;
 import org.sonatype.aether.repository.ProxySelector;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
@@ -61,6 +65,8 @@ public class DefaultMavenSettings
 
     private ProxySelector proxySelector;
 
+    private LocalRepositoryManager localRepositoryManager;
+
     public DefaultMavenSettings( final File globalSettings,
                                  final File userSettings )
     {
@@ -80,6 +86,7 @@ public class DefaultMavenSettings
             mirrorSelector = createMirrorSelector( settings );
             authenticationSelector = createAuthenticationSelector( settings );
             proxySelector = createProxySelector( settings );
+            localRepositoryManager = createLocalRepositoryManager( settings );
         }
         catch ( SettingsBuildingException e )
         {
@@ -183,6 +190,25 @@ public class DefaultMavenSettings
                         }
                     };
                 }
+
+                public LocalRepositoryManager getLocalRepositoryManager()
+                {
+                    if ( localRepositoryManager == null ) {
+                        return session.getLocalRepositoryManager();
+                    }
+
+                    return localRepositoryManager;
+                }
+
+                public LocalRepository getLocalRepository()
+                {
+                    if ( localRepositoryManager == null )
+                    {
+                        return session.getLocalRepository();
+                    }
+
+                    return localRepositoryManager.getRepository();
+                }
             }
         );
     }
@@ -258,6 +284,24 @@ public class DefaultMavenSettings
             return proxySelector;
         }
         return null;
+    }
+
+    private LocalRepositoryManager createLocalRepositoryManager( Settings settings )
+    {
+        String localRepositoryPath = settings.getLocalRepository();
+        if ( localRepositoryPath == null )
+        {
+            return null;
+        }
+
+        try
+        {
+            return new EnhancedLocalRepositoryManagerFactory().newInstance( new LocalRepository( localRepositoryPath ) );
+        }
+        catch ( NoLocalRepositoryManagerException e )
+        {
+            throw new RuntimeException( e.getMessage(), e );
+        }
     }
 
 }
