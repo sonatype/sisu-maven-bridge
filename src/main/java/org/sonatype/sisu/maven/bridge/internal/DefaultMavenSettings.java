@@ -29,14 +29,13 @@ import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
 import org.apache.maven.settings.building.SettingsBuilder;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.apache.maven.settings.building.SettingsBuildingRequest;
+import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.impl.internal.EnhancedLocalRepositoryManagerFactory;
 import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.AuthenticationSelector;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.LocalRepositoryManager;
 import org.sonatype.aether.repository.MirrorSelector;
-import org.sonatype.aether.repository.NoLocalRepositoryManagerException;
 import org.sonatype.aether.repository.ProxySelector;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
@@ -55,8 +54,6 @@ public class DefaultMavenSettings
     implements MavenSettings
 {
 
-    private final SettingsBuilder settingsBuilder = new DefaultSettingsBuilderFactory().newInstance();
-
     private MirrorSelector mirrorSelector;
 
     private Collection<RemoteRepository> repositories;
@@ -67,9 +64,13 @@ public class DefaultMavenSettings
 
     private LocalRepositoryManager localRepositoryManager;
 
+    private RepositorySystem repositorySystem;
+
     public DefaultMavenSettings( final File globalSettings,
-                                 final File userSettings )
+                                 final File userSettings,
+                                 final RepositorySystem repositorySystem )
     {
+        this.repositorySystem = repositorySystem;
         final SettingsBuildingRequest settingsRequest = new DefaultSettingsBuildingRequest();
 
         settingsRequest.setGlobalSettingsFile( globalSettings );
@@ -80,6 +81,7 @@ public class DefaultMavenSettings
 
         try
         {
+            final SettingsBuilder settingsBuilder = new DefaultSettingsBuilderFactory().newInstance();
             Settings settings = settingsBuilder.build( settingsRequest ).getEffectiveSettings();
 
             repositories = getRepositories( settings );
@@ -193,7 +195,8 @@ public class DefaultMavenSettings
 
                 public LocalRepositoryManager getLocalRepositoryManager()
                 {
-                    if ( localRepositoryManager == null ) {
+                    if ( localRepositoryManager == null )
+                    {
                         return session.getLocalRepositoryManager();
                     }
 
@@ -286,22 +289,15 @@ public class DefaultMavenSettings
         return null;
     }
 
-    private LocalRepositoryManager createLocalRepositoryManager( Settings settings )
+    private LocalRepositoryManager createLocalRepositoryManager( final Settings settings )
     {
-        String localRepositoryPath = settings.getLocalRepository();
+        final String localRepositoryPath = settings.getLocalRepository();
         if ( localRepositoryPath == null )
         {
             return null;
         }
 
-        try
-        {
-            return new EnhancedLocalRepositoryManagerFactory().newInstance( new LocalRepository( localRepositoryPath ) );
-        }
-        catch ( NoLocalRepositoryManagerException e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
+        return repositorySystem.newLocalRepositoryManager( new LocalRepository( localRepositoryPath ) );
     }
 
 }

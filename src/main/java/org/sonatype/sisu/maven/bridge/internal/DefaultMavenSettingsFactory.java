@@ -17,6 +17,8 @@ import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
@@ -36,10 +38,16 @@ public class DefaultMavenSettingsFactory
 
     private File userSettings;
 
+    private ServiceLocator serviceLocator;
+
+    private RepositorySystem repositorySystem;
+
     @Inject
     DefaultMavenSettingsFactory( final @Nullable @Named( GLOBAL_SETTINGS ) File globalSettings,
-                                 final @Nullable @Named( USER_SETTINGS ) File userSettings )
+                                 final @Nullable @Named( USER_SETTINGS ) File userSettings,
+                                 final ServiceLocator serviceLocator )
     {
+        this.serviceLocator = serviceLocator;
         this.globalSettings =
             globalSettings != null && globalSettings.isFile() ? globalSettings : DEFAULT_GLOBAL_SETTINGS_FILE;
         this.userSettings =
@@ -61,6 +69,16 @@ public class DefaultMavenSettingsFactory
     @Override
     public MavenSettings create( final File globalSettings, final File userSettings )
     {
-        return new DefaultMavenSettings( globalSettings, userSettings );
+        return new DefaultMavenSettings( globalSettings, userSettings, getRepositorySystem() );
     }
+
+    private RepositorySystem getRepositorySystem()
+    {
+        if ( repositorySystem == null )
+        {
+            repositorySystem = serviceLocator.getService( RepositorySystem.class );
+        }
+        return repositorySystem;
+    }
+
 }
