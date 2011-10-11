@@ -43,8 +43,8 @@ public class DefaultMavenSettingsFactory
     private RepositorySystem repositorySystem;
 
     @Inject
-    DefaultMavenSettingsFactory( final @Nullable @Named( GLOBAL_SETTINGS ) File globalSettings,
-                                 final @Nullable @Named( USER_SETTINGS ) File userSettings,
+    DefaultMavenSettingsFactory( final @Nullable @Named( "${" + GLOBAL_SETTINGS + "}" ) File globalSettings,
+                                 final @Nullable @Named( "${" + USER_SETTINGS + "}" ) File userSettings,
                                  final ServiceLocator serviceLocator )
     {
         this.serviceLocator = serviceLocator;
