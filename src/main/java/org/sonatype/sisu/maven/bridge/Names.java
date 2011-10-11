@@ -20,7 +20,7 @@ public interface Names
 
     static final String LOCAL_ARTIFACT_RESOLVER_ROOT_DIR = "maven.localArtifactResolver.rootDir";
 
-    static final String LOCAL_REPOSITORY_DIR = "maven.localRepository";
+    static final String LOCAL_REPOSITORY_DIR = "maven.repo.local";
 
     static final String UPDATE_POLICY = "maven.updatePolicy";
 
