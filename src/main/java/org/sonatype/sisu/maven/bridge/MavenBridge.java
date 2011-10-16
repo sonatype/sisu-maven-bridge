@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2010-2011 Sonatype, Inc.
+/*
+ * Copyright (c) 2009-2011 Sonatype, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * and Apache License v2.0 which accompanies this distribution.
@@ -8,7 +8,8 @@
  * The Apache License v2.0 is available at
  *   http://www.apache.org/licenses/LICENSE-2.0.html
  * You may elect to redistribute this code under either of these licenses.
- *******************************************************************************/
+ */
+
 package org.sonatype.sisu.maven.bridge;
 
 import java.io.File;
@@ -25,15 +26,16 @@ import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * Reusable Maven services.
- * 
+ *
  * @author adreghiciu
  * @author cstamas
  */
 public interface MavenBridge
 {
+
     /**
      * Builds the effective model using POM passed in as model source and passed in repositories (if any).
-     * 
+     *
      * @param pom
      * @param repositories
      * @return
@@ -44,7 +46,7 @@ public interface MavenBridge
 
     /**
      * Builds the effective model using POM passed in as model source and passed in repositories (if any).
-     * 
+     *
      * @param pom
      * @param repositories
      * @return
@@ -55,7 +57,7 @@ public interface MavenBridge
 
     /**
      * Builds effective model.
-     * 
+     *
      * @param pom
      * @param repositories
      * @return
@@ -67,7 +69,7 @@ public interface MavenBridge
 
     /**
      * Builds effective model.
-     * 
+     *
      * @param pom
      * @param repositories
      * @return
@@ -80,7 +82,7 @@ public interface MavenBridge
 
     /**
      * Builds the dependency transitive hull of the passed in single Dependency node used as root.
-     * 
+     *
      * @param node
      * @param repositories
      * @return
@@ -92,7 +94,7 @@ public interface MavenBridge
     /**
      * Builds the dependency transitive hull using the passed in model and reusing most parts of it (dependencies,
      * repositories, depMgt, etc).
-     * 
+     *
      * @param model
      * @param repositories
      * @return
@@ -108,7 +110,7 @@ public interface MavenBridge
      * uses the passed in session, and hence, is meant to be used in "server embedded" use cases like Nexus, when
      * multiple parallel running requests may occur (with different Nexus repositories involved, which means different
      * WorkspaceReaders are present in session).
-     * 
+     *
      * @param session
      * @param pom
      * @param repositories
@@ -123,7 +125,7 @@ public interface MavenBridge
      * uses the passed in session, and hence, is meant to be used in "server embedded" use cases like Nexus, when
      * multiple parallel running requests may occur (with different Nexus repositories involved, which means different
      * WorkspaceReaders are present in session).
-     * 
+     *
      * @param session
      * @param pom
      * @param repositories
@@ -138,7 +140,7 @@ public interface MavenBridge
      * passed in session, and hence, is meant to be used in "server embedded" use cases like Nexus, when multiple
      * parallel running requests may occur (with different Nexus repositories involved, which means different
      * WorkspaceReaders are present in session).
-     * 
+     *
      * @param node
      * @param repositories
      * @return
@@ -152,7 +154,7 @@ public interface MavenBridge
      * repositories, depMgt, etc). This method uses the passed in session, and hence, is meant to be used in
      * "server embedded" use cases like Nexus, when multiple parallel running requests may occur (with different Nexus
      * repositories involved, which means different WorkspaceReaders are present in session).
-     * 
+     *
      * @param model
      * @param repositories
      * @return
