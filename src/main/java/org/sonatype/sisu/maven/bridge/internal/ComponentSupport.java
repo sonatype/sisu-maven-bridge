@@ -11,15 +11,10 @@
  *******************************************************************************/
 package org.sonatype.sisu.maven.bridge.internal;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Named
-@Singleton
-public class ComponentSupport
+public abstract class ComponentSupport
 {
 
     private Logger log;
