@@ -29,13 +29,14 @@ public abstract class ComponentSupport
         return log;
     }
 
-    protected static void assertNotNull( final Object session,
-                                         final Object message )
+    protected static <T> T assertNotNull( final T object,
+                                             final Object message )
     {
-        if ( session == null )
+        if ( object == null )
         {
             throw new NullPointerException( message.toString() );
         }
+        return object;
     }
 
 }

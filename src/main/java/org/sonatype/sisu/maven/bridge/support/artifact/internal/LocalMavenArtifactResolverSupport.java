@@ -33,7 +33,8 @@ public abstract class LocalMavenArtifactResolverSupport
 
     @Override
     protected Artifact doResolve( final ArtifactRequest artifactRequest,
-                                  final RepositorySystemSession session )
+                                  final RepositorySystemSession session /* ignored */,
+                                  final RemoteRepository... repositories /* ignored */)
         throws ArtifactResolutionException
     {
         String path = layout.getPath( artifactRequest.getArtifact() ).getPath();

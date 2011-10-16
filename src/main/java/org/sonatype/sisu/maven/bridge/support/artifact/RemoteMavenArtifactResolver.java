@@ -12,8 +12,12 @@
 
 package org.sonatype.sisu.maven.bridge.support.artifact;
 
+import static java.util.Arrays.asList;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -53,12 +57,21 @@ public class RemoteMavenArtifactResolver
 
     @Override
     protected Artifact doResolve( final ArtifactRequest artifactRequest,
-                                  final RepositorySystemSession session )
+                                  final RepositorySystemSession session,
+                                  final RemoteRepository... repositories )
         throws ArtifactResolutionException
     {
+
+        final List<RemoteRepository> allRepositories = new ArrayList<RemoteRepository>();
+        if ( repositories != null && repositories.length > 0 )
+        {
+            allRepositories.addAll( asList( repositories ) );
+        }
+        allRepositories.addAll( artifactRequest.getRepositories() );
+
         artifactRequest.setRepositories(
             remoteRepositoryManager.aggregateRepositories(
-                session, Collections.<RemoteRepository>emptyList(), artifactRequest.getRepositories(), RECESSIVE_IS_RAW
+                session, Collections.<RemoteRepository>emptyList(), allRepositories, RECESSIVE_IS_RAW
             )
         );
 

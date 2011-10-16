@@ -43,7 +43,7 @@ public class ArtifactRequestBuilder
                                             final String extension,
                                             final String classifier )
     {
-        setArtifact( new DefaultArtifact( groupId, artifactId, version, extension, classifier ) );
+        setArtifact( new DefaultArtifact( groupId, artifactId, classifier, extension, version ) );
         return this;
     }
 
@@ -52,7 +52,7 @@ public class ArtifactRequestBuilder
                                             final String version,
                                             final String extension )
     {
-        setArtifact( new DefaultArtifact( groupId, artifactId, version, extension ) );
+        setArtifact( new DefaultArtifact( groupId, artifactId, extension, version ) );
         return this;
     }
 

@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.maven.model.Repository;
 import org.sonatype.aether.repository.RemoteRepository;
@@ -30,6 +31,15 @@ public class RemoteRepositoryBuilder
     public static RemoteRepository remoteRepository( final String url )
     {
         return remoteRepository( null, url );
+    }
+
+    public static RemoteRepository[] remoteRepositories( final Collection<RemoteRepository> repositories )
+    {
+        if ( repositories == null )
+        {
+            return new RemoteRepository[0];
+        }
+        return repositories.toArray( new RemoteRepository[repositories.size()] );
     }
 
     public static RemoteRepository remoteRepository( final String id, final String url )

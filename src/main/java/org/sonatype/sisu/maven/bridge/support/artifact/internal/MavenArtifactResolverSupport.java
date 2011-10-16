@@ -17,6 +17,7 @@ import javax.inject.Provider;
 
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
@@ -37,7 +38,8 @@ public abstract class MavenArtifactResolverSupport
 
     @Override
     public Artifact resolveArtifact( final ArtifactRequest artifactRequest,
-                                     final RepositorySystemSession session )
+                                     final RepositorySystemSession session,
+                                     final RemoteRepository... repositories )
         throws ArtifactResolutionException
     {
         assertNotNull( session, session.getClass() );
@@ -48,14 +50,16 @@ public abstract class MavenArtifactResolverSupport
     // ==
 
     @Override
-    public Artifact resolveArtifact( final ArtifactRequest artifactRequest )
+    public Artifact resolveArtifact( final ArtifactRequest artifactRequest,
+                                     final RemoteRepository... repositories )
         throws ArtifactResolutionException
     {
         return resolveArtifact( artifactRequest, repositorySystemSessionProvider.get() );
     }
 
     protected abstract Artifact doResolve( final ArtifactRequest artifactRequest,
-                                           final RepositorySystemSession session )
+                                           final RepositorySystemSession session,
+                                           final RemoteRepository... repositories )
         throws ArtifactResolutionException;
 
 }
