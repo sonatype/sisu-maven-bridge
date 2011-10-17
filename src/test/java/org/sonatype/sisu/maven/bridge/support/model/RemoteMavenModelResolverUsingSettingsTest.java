@@ -32,7 +32,7 @@ import com.google.inject.Binder;
  *
  * @since 2.0
  */
-public class RemoteMavenModelUsingSettingsResolverTest
+public class RemoteMavenModelResolverUsingSettingsTest
     extends InjectedTestSupport
 {
 
