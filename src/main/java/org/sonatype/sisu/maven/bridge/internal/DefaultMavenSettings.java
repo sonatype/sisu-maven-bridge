@@ -29,6 +29,7 @@ import org.apache.maven.settings.building.SettingsBuildingException;
 import org.apache.maven.settings.building.SettingsBuildingRequest;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.AuthenticationSelector;
 import org.sonatype.aether.repository.LocalRepository;
@@ -95,13 +96,23 @@ public class DefaultMavenSettings
     }
 
     @Override
-    public ArtifactRequest inject( final ArtifactRequest artifactRequest )
+    public ArtifactRequest inject( final ArtifactRequest request )
     {
         for ( RemoteRepository repository : repositories )
         {
-            artifactRequest.addRepository( repository );
+            request.addRepository( repository );
         }
-        return artifactRequest;
+        return request;
+    }
+
+    @Override
+    public CollectRequest inject( final CollectRequest request )
+    {
+        for ( RemoteRepository repository : repositories )
+        {
+            request.addRepository( repository );
+        }
+        return request;
     }
 
     @Override

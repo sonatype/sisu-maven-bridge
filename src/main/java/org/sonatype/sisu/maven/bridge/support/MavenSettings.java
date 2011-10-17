@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support;
 
 import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.resolution.ArtifactRequest;
 
 /**
@@ -24,7 +25,9 @@ import org.sonatype.aether.resolution.ArtifactRequest;
 public interface MavenSettings
 {
 
-    ArtifactRequest inject( ArtifactRequest artifactRequest );
+    ArtifactRequest inject( ArtifactRequest request );
+
+    CollectRequest inject( CollectRequest request );
 
     RepositorySystemSession inject( RepositorySystemSession session );
 
