@@ -13,22 +13,30 @@
 package org.sonatype.sisu.maven.bridge.support.model;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolverUsingSettings;
-import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
 @Singleton
 public class RemoteMavenModelResolverUsingSettings
-    extends MavenModelResolverSupport
+    extends RemoteMavenModelResolver
     implements MavenModelResolver
 {
 
-    @Inject
-    RemoteMavenModelResolverUsingSettings( final RemoteMavenArtifactResolverUsingSettings artifactResolver )
+    public RemoteMavenModelResolverUsingSettings( final RemoteMavenArtifactResolverUsingSettings artifactResolver )
     {
         super( artifactResolver );
+    }
+
+    @Inject
+    public RemoteMavenModelResolverUsingSettings( final RemoteMavenArtifactResolverUsingSettings artifactResolver,
+                                                  final @Nullable Provider<RepositorySystemSession> sessionProvider )
+    {
+        super( artifactResolver, sessionProvider );
     }
 
 }

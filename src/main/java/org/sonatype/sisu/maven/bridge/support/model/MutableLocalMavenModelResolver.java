@@ -27,7 +27,7 @@ public class MutableLocalMavenModelResolver
 {
 
     @Inject
-    MutableLocalMavenModelResolver( final MutableLocalMavenArtifactResolver artifactResolver )
+    public MutableLocalMavenModelResolver( final MutableLocalMavenArtifactResolver artifactResolver )
     {
         super( artifactResolver );
     }

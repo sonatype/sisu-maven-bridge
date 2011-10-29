@@ -12,7 +12,6 @@
 
 package org.sonatype.sisu.maven.bridge.support.artifact.internal;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.sonatype.aether.RepositorySystemSession;
@@ -20,6 +19,7 @@ import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.internal.ComponentSupport;
 
@@ -28,12 +28,18 @@ public abstract class MavenArtifactResolverSupport
     implements MavenArtifactResolver
 {
 
-    private Provider<RepositorySystemSession> repositorySystemSessionProvider;
+    protected static final Provider<RepositorySystemSession> NO_SESSION_PROVIDER = null;
 
-    @Inject
-    void setRepositorySystemSessionProvider( final Provider<RepositorySystemSession> repositorySystemSessionProvider )
+    private Provider<RepositorySystemSession> sessionProvider;
+
+    protected MavenArtifactResolverSupport()
     {
-        this.repositorySystemSessionProvider = repositorySystemSessionProvider;
+        this( NO_SESSION_PROVIDER );
+    }
+
+    protected MavenArtifactResolverSupport( @Nullable final Provider<RepositorySystemSession> sessionProvider )
+    {
+        this.sessionProvider = sessionProvider;
     }
 
     @Override
@@ -54,7 +60,10 @@ public abstract class MavenArtifactResolverSupport
                                      final RemoteRepository... repositories )
         throws ArtifactResolutionException
     {
-        return resolveArtifact( artifactRequest, repositorySystemSessionProvider.get() );
+        return resolveArtifact(
+            artifactRequest,
+            assertNotNull( sessionProvider, "Repository system session provider not specified" ).get()
+        );
     }
 
     protected abstract Artifact doResolve( final ArtifactRequest artifactRequest,

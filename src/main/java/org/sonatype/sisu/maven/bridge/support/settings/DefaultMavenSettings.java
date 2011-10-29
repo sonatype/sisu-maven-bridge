@@ -10,7 +10,7 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package org.sonatype.sisu.maven.bridge.internal;
+package org.sonatype.sisu.maven.bridge.support.settings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.util.repository.DefaultAuthenticationSelector;
 import org.sonatype.aether.util.repository.DefaultMirrorSelector;
 import org.sonatype.aether.util.repository.DefaultProxySelector;
+import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.RemoteRepositoryBuilder;
 

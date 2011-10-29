@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.sonatype.aether.RepositorySystem;
@@ -31,6 +32,7 @@ import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.aether.spi.locator.ServiceLocator;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.Names;
 import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
@@ -48,9 +50,16 @@ public class RemoteMavenArtifactResolver
 
     private RemoteRepositoryManager remoteRepositoryManager;
 
-    @Inject
-    void setServiceLocator( final ServiceLocator serviceLocator )
+    public RemoteMavenArtifactResolver( final ServiceLocator serviceLocator )
     {
+        this( serviceLocator, NO_SESSION_PROVIDER );
+    }
+
+    @Inject
+    public RemoteMavenArtifactResolver( final ServiceLocator serviceLocator,
+                                        final @Nullable Provider<RepositorySystemSession> sessionProvider )
+    {
+        super( sessionProvider );
         repositorySystem = serviceLocator.getService( RepositorySystem.class );
         remoteRepositoryManager = serviceLocator.getService( RemoteRepositoryManager.class );
     }

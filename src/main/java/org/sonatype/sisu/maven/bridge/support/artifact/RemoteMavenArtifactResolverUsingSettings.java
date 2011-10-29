@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support.artifact;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.sonatype.aether.RepositorySystemSession;
@@ -20,6 +21,8 @@ import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
+import org.sonatype.aether.spi.locator.ServiceLocator;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
@@ -32,9 +35,18 @@ public class RemoteMavenArtifactResolverUsingSettings
 
     private MavenSettings mavenSettings;
 
-    @Inject
-    void setMavenSettingsFactory( final MavenSettingsFactory mavenSettingsFactory )
+    public RemoteMavenArtifactResolverUsingSettings( final ServiceLocator serviceLocator,
+                                                     final MavenSettingsFactory mavenSettingsFactory )
     {
+        this( serviceLocator, mavenSettingsFactory, NO_SESSION_PROVIDER );
+    }
+
+    @Inject
+    public RemoteMavenArtifactResolverUsingSettings( final ServiceLocator serviceLocator,
+                                                     final MavenSettingsFactory mavenSettingsFactory,
+                                                     final @Nullable Provider<RepositorySystemSession> sessionProvider )
+    {
+        super( serviceLocator, sessionProvider );
         mavenSettings = mavenSettingsFactory.create();
     }
 

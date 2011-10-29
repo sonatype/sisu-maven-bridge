@@ -17,7 +17,6 @@ import javax.inject.Singleton;
 
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.LocalMavenArtifactResolver;
-import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
 @Singleton
@@ -27,7 +26,7 @@ public class LocalMavenModelResolver
 {
 
     @Inject
-    LocalMavenModelResolver( final LocalMavenArtifactResolver artifactResolver )
+    public LocalMavenModelResolver( final LocalMavenArtifactResolver artifactResolver )
     {
         super( artifactResolver );
     }

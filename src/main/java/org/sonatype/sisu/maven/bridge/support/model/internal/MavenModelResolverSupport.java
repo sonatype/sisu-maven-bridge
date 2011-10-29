@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.maven.model.Model;
@@ -41,6 +40,7 @@ import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.internal.ComponentSupport;
@@ -50,22 +50,25 @@ public abstract class MavenModelResolverSupport
     implements MavenModelResolver
 {
 
+    protected static final Provider<RepositorySystemSession> NO_SESSION_PROVIDER = null;
+
     private final DefaultModelBuilder modelBuilder;
 
     private final MavenArtifactResolver artifactResolver;
 
-    private Provider<RepositorySystemSession> repositorySystemSessionProvider;
+    private Provider<RepositorySystemSession> sessionProvider;
 
     protected MavenModelResolverSupport( final MavenArtifactResolver artifactResolver )
     {
-        this.artifactResolver = assertNotNull( artifactResolver, "remote maven artifact resolver not specified" );
-        this.modelBuilder = new DefaultModelBuilderFactory().newInstance();
+        this( artifactResolver, NO_SESSION_PROVIDER );
     }
 
-    @Inject
-    void setRepositorySystemSessionProvider( final Provider<RepositorySystemSession> repositorySystemSessionProvider )
+    protected MavenModelResolverSupport( final MavenArtifactResolver artifactResolver,
+                                         final @Nullable Provider<RepositorySystemSession> sessionProvider )
     {
-        this.repositorySystemSessionProvider = repositorySystemSessionProvider;
+        this.artifactResolver = assertNotNull( artifactResolver, "remote maven artifact resolver not specified" );
+        this.modelBuilder = new DefaultModelBuilderFactory().newInstance();
+        this.sessionProvider = sessionProvider;
     }
 
     @Override
@@ -91,7 +94,9 @@ public abstract class MavenModelResolverSupport
                                final RemoteRepository... repositories )
         throws ModelBuildingException
     {
-        return resolveModel( request, repositorySystemSessionProvider.get() );
+        return resolveModel(
+            request,
+            assertNotNull( sessionProvider, "Repository system session provider not specified" ).get() );
     }
 
     // ==

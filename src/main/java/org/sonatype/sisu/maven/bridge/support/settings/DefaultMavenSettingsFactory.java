@@ -10,7 +10,7 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package org.sonatype.sisu.maven.bridge.internal;
+package org.sonatype.sisu.maven.bridge.support.settings;
 
 import static org.sonatype.sisu.maven.bridge.Names.*;
 
@@ -43,16 +43,27 @@ public class DefaultMavenSettingsFactory
 
     private RepositorySystem repositorySystem;
 
-    @Inject
-    DefaultMavenSettingsFactory( final @Nullable @Named( "${" + GLOBAL_SETTINGS + "}" ) File globalSettings,
-                                 final @Nullable @Named( "${" + USER_SETTINGS + "}" ) File userSettings,
-                                 final ServiceLocator serviceLocator )
+    public DefaultMavenSettingsFactory( final ServiceLocator serviceLocator )
     {
         this.serviceLocator = serviceLocator;
-        this.globalSettings =
-            globalSettings != null && globalSettings.isFile() ? globalSettings : DEFAULT_GLOBAL_SETTINGS_FILE;
-        this.userSettings =
-            userSettings != null && userSettings.isFile() ? userSettings : DEFAULT_USER_SETTINGS_FILE;
+        this.globalSettings = DEFAULT_GLOBAL_SETTINGS_FILE;
+        this.userSettings = DEFAULT_USER_SETTINGS_FILE;
+    }
+
+    @Inject
+    public DefaultMavenSettingsFactory( final ServiceLocator serviceLocator,
+                                        final @Nullable @Named( "${" + GLOBAL_SETTINGS + "}" ) File globalSettings,
+                                        final @Nullable @Named( "${" + USER_SETTINGS + "}" ) File userSettings )
+    {
+        this( serviceLocator );
+        if ( globalSettings != null && globalSettings.isFile() )
+        {
+            this.globalSettings = globalSettings;
+        }
+        if ( userSettings != null && userSettings.isFile() )
+        {
+            this.userSettings = userSettings;
+        }
     }
 
     @Override

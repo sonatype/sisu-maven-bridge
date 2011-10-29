@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support.dependency;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.sonatype.aether.RepositorySystemSession;
@@ -20,11 +21,11 @@ import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
-import org.sonatype.sisu.maven.bridge.support.dependency.internal.MavenDependencyTreeResolverSupport;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolverUsingSettings;
 
 @Singleton
@@ -35,6 +36,23 @@ public class RemoteMavenDependencyTreeResolverUsingSettings
 
     private MavenSettings mavenSettings;
 
+    public RemoteMavenDependencyTreeResolverUsingSettings( final ServiceLocator serviceLocator,
+                                                           final MavenSettingsFactory mavenSettingsFactory,
+                                                           final @Nullable RemoteMavenModelResolverUsingSettings mavenModelResolver )
+    {
+        this( serviceLocator, mavenSettingsFactory, mavenModelResolver, NO_SESSION_PROVIDER );
+    }
+
+    @Inject
+    public RemoteMavenDependencyTreeResolverUsingSettings( final ServiceLocator serviceLocator,
+                                                           final MavenSettingsFactory mavenSettingsFactory,
+                                                           final @Nullable RemoteMavenModelResolverUsingSettings mavenModelResolver,
+                                                           final @Nullable Provider<RepositorySystemSession> sessionProvider )
+    {
+        super( serviceLocator, mavenModelResolver, sessionProvider );
+        mavenSettings = mavenSettingsFactory.create();
+    }
+
     @Override
     public DependencyNode resolveDependencyTree( final CollectRequest request,
                                                  final RepositorySystemSession session,
@@ -44,18 +62,6 @@ public class RemoteMavenDependencyTreeResolverUsingSettings
         return super.resolveDependencyTree(
             mavenSettings.inject( request ), mavenSettings.inject( session ), repositories
         );
-    }
-
-    @Inject
-    void setMavenSettingsFactory( final MavenSettingsFactory mavenSettingsFactory )
-    {
-        mavenSettings = mavenSettingsFactory.create();
-    }
-
-    @Inject
-    protected void injectMavenModelResolver( final @Nullable RemoteMavenModelResolverUsingSettings mavenModelResolver )
-    {
-        super.setMavenModelResolver( mavenModelResolver );
     }
 
 }

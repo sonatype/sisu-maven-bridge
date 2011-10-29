@@ -13,8 +13,11 @@
 package org.sonatype.sisu.maven.bridge.support.model;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
@@ -25,10 +28,16 @@ public class RemoteMavenModelResolver
     implements MavenModelResolver
 {
 
-    @Inject
-    RemoteMavenModelResolver( final RemoteMavenArtifactResolver artifactResolver )
+    public RemoteMavenModelResolver( final RemoteMavenArtifactResolver artifactResolver )
     {
         super( artifactResolver );
+    }
+
+    @Inject
+    public RemoteMavenModelResolver( final RemoteMavenArtifactResolver artifactResolver,
+                                     final @Nullable Provider<RepositorySystemSession> sessionProvider )
+    {
+        super( artifactResolver, sessionProvider );
     }
 
 }

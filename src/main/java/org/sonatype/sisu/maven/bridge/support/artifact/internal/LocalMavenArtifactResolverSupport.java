@@ -15,6 +15,8 @@ package org.sonatype.sisu.maven.bridge.support.artifact.internal;
 import java.io.File;
 import java.util.Arrays;
 
+import javax.inject.Provider;
+
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.repository.RemoteRepository;
@@ -24,6 +26,7 @@ import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.transfer.ArtifactNotFoundException;
 import org.sonatype.aether.util.layout.MavenDefaultLayout;
 import org.sonatype.aether.util.layout.RepositoryLayout;
+import org.sonatype.inject.Nullable;
 
 public abstract class LocalMavenArtifactResolverSupport
     extends MavenArtifactResolverSupport

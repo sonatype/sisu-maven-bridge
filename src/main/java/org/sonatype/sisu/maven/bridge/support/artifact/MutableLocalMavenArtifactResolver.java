@@ -30,11 +30,9 @@ public class MutableLocalMavenArtifactResolver
     private File basedir;
 
     @Inject
-    MutableLocalMavenArtifactResolver( final @Nullable @Named( LOCAL_ARTIFACT_RESOLVER_ROOT_DIR ) File basedir )
+    public MutableLocalMavenArtifactResolver( final @Nullable @Named( LOCAL_ARTIFACT_RESOLVER_ROOT_DIR ) File basedir )
     {
-        assertNotNull( basedir, "repository base directory not specified" );
-
-        this.basedir = basedir;
+        setBaseDir( basedir );
     }
 
     @Override
@@ -45,7 +43,7 @@ public class MutableLocalMavenArtifactResolver
 
     public void setBaseDir( final File basedir )
     {
-        this.basedir = basedir;
+        this.basedir = assertNotNull( basedir, "Repository base directory not specified" );
     }
 
 }

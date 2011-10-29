@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.maven.model.Model;
@@ -42,6 +41,7 @@ import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.aether.util.artifact.ArtifactProperties;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.DefaultArtifactType;
+import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.internal.ComponentSupport;
@@ -52,25 +52,30 @@ public abstract class MavenDependencyTreeResolverSupport
     implements MavenDependencyTreeResolver
 {
 
+    protected static final Provider<RepositorySystemSession> NO_SESSION_PROVIDER = null;
+
     private MavenModelResolver mavenModelResolver;
 
-    private Provider<RepositorySystemSession> repositorySystemSessionProvider;
+    private Provider<RepositorySystemSession> sessionProvider;
 
     private RepositorySystem repositorySystem;
 
     private RemoteRepositoryManager remoteRepositoryManager;
 
-    @Inject
-    void setServiceLocator( final ServiceLocator serviceLocator )
+    protected MavenDependencyTreeResolverSupport( final ServiceLocator serviceLocator,
+                                                  final @Nullable MavenModelResolver mavenModelResolver )
+    {
+        this( serviceLocator, mavenModelResolver, NO_SESSION_PROVIDER );
+    }
+
+    protected MavenDependencyTreeResolverSupport( final ServiceLocator serviceLocator,
+                                                  final @Nullable MavenModelResolver mavenModelResolver,
+                                                  final @Nullable Provider<RepositorySystemSession> sessionProvider )
     {
         repositorySystem = serviceLocator.getService( RepositorySystem.class );
         remoteRepositoryManager = serviceLocator.getService( RemoteRepositoryManager.class );
-    }
-
-    @Inject
-    void setRepositorySystemSessionProvider( final Provider<RepositorySystemSession> repositorySystemSessionProvider )
-    {
-        this.repositorySystemSessionProvider = repositorySystemSessionProvider;
+        this.sessionProvider = sessionProvider;
+        this.mavenModelResolver = mavenModelResolver;
     }
 
     @Override
@@ -103,12 +108,10 @@ public abstract class MavenDependencyTreeResolverSupport
                                                  final RemoteRepository... repositories )
         throws DependencyCollectionException
     {
-        return resolveDependencyTree( request, repositorySystemSessionProvider.get() );
-    }
-
-    protected void setMavenModelResolver( final MavenModelResolver mavenModelResolver )
-    {
-        this.mavenModelResolver = mavenModelResolver;
+        return resolveDependencyTree(
+            request,
+            assertNotNull( sessionProvider, "Repository system session provider not specified" ).get()
+        );
     }
 
     protected RemoteRepositoryManager getRemoteRepositoryManager()

@@ -20,7 +20,6 @@ import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport.ArtifactModelSource;
 
 /**
@@ -32,7 +31,8 @@ public class ModelBuildingRequestBuilder
     extends DefaultModelBuildingRequest
 {
 
-    private ModelBuildingRequestBuilder(){
+    private ModelBuildingRequestBuilder()
+    {
         setSystemProperties( System.getProperties() );
         setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
         setLocationTracking( false );
@@ -44,7 +44,7 @@ public class ModelBuildingRequestBuilder
         return new ModelBuildingRequestBuilder();
     }
 
-    public ModelBuildingRequestBuilder pom(final File pom)
+    public ModelBuildingRequestBuilder pom( final File pom )
     {
         setModelSource( new FileModelSource( pom ) );
         return this;
@@ -53,16 +53,15 @@ public class ModelBuildingRequestBuilder
     public ModelBuildingRequestBuilder pom( final String coordinates )
     {
         final Artifact artifact = request().artifact( coordinates ).getArtifact();
-        return pom(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
+        return pom( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
     }
 
     public ModelBuildingRequestBuilder pom( final String groupId,
                                             final String artifactId,
                                             final String version )
     {
-        setModelSource( new ArtifactModelSource( request().artifact( groupId, artifactId, version, "pom" )) );
+        setModelSource( new ArtifactModelSource( request().artifact( groupId, artifactId, version, "pom" ) ) );
         return this;
     }
-
 
 }

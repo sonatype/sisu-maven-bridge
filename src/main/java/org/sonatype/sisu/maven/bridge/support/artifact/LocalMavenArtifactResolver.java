@@ -29,11 +29,9 @@ public class LocalMavenArtifactResolver
     private final File basedir;
 
     @Inject
-    LocalMavenArtifactResolver( @Named( LOCAL_ARTIFACT_RESOLVER_ROOT_DIR ) File basedir )
+    public LocalMavenArtifactResolver( final @Named( LOCAL_ARTIFACT_RESOLVER_ROOT_DIR ) File basedir )
     {
-        assertNotNull( basedir, "repository base directory not specified" );
-
-        this.basedir = basedir;
+        this.basedir = assertNotNull( basedir, "Repository base directory not specified" );
     }
 
     @Override

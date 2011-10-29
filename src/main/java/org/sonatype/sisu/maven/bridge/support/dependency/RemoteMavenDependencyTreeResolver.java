@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.sonatype.aether.RepositorySystemSession;
@@ -28,6 +29,7 @@ import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.LocalRepositoryManager;
 import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
 import org.sonatype.sisu.maven.bridge.Names;
@@ -42,6 +44,20 @@ public class RemoteMavenDependencyTreeResolver
 {
 
     private static final boolean RECESSIVE_IS_RAW = true;
+
+    public RemoteMavenDependencyTreeResolver( final ServiceLocator serviceLocator,
+                                              final @Nullable RemoteMavenModelResolver mavenModelResolver )
+    {
+        super( serviceLocator, mavenModelResolver );
+    }
+
+    @Inject
+    public RemoteMavenDependencyTreeResolver( final ServiceLocator serviceLocator,
+                                              final @Nullable RemoteMavenModelResolver mavenModelResolver,
+                                              final @Nullable Provider<RepositorySystemSession> sessionProvider )
+    {
+        super( serviceLocator, mavenModelResolver, sessionProvider );
+    }
 
     @Override
     public DependencyNode resolveDependencyTree( final CollectRequest request,
@@ -84,12 +100,6 @@ public class RemoteMavenDependencyTreeResolver
         }
 
         return super.resolveDependencyTree( request, safeSession, repositories );
-    }
-
-    @Inject
-    protected void injectMavenModelResolver( final @Nullable RemoteMavenModelResolver mavenModelResolver )
-    {
-        super.setMavenModelResolver( mavenModelResolver );
     }
 
 }
