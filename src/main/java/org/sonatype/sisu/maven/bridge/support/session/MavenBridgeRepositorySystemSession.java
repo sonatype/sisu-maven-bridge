@@ -10,7 +10,7 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package org.sonatype.sisu.maven.bridge.internal;
+package org.sonatype.sisu.maven.bridge.support.session;
 
 import static org.sonatype.sisu.maven.bridge.Names.*;
 
@@ -26,6 +26,7 @@ import org.sonatype.aether.RepositoryEvent;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.repository.LocalRepository;
+import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.aether.transfer.AbstractTransferListener;
 import org.sonatype.aether.transfer.TransferCancelledException;
 import org.sonatype.aether.transfer.TransferEvent;
@@ -48,9 +49,9 @@ public class MavenBridgeRepositorySystemSession
     private final RepositorySystem repositorySystem;
 
     @Inject
-    public MavenBridgeRepositorySystemSession( final RepositorySystem repositorySystem )
+    public MavenBridgeRepositorySystemSession( final ServiceLocator serviceLocator )
     {
-        this.repositorySystem = repositorySystem;
+        this.repositorySystem = serviceLocator.getService( RepositorySystem.class );
         setRepositoryListener( new AbstractRepositoryListener()
         {
             @Override
