@@ -112,8 +112,8 @@ public class MavenBridgeRepositorySystemSession
             @Override
             public void transferFailed( TransferEvent event )
             {
-                log().error( "Failed to download {}{}", new Object[]{ event.getResource().getRepositoryUrl(),
-                    event.getResource().getResourceName(), event.getException() } );
+                log().debug( "Failed to download {}{}: {}", new Object[]{ event.getResource().getRepositoryUrl(),
+                    event.getResource().getResourceName(), event.getException().getMessage() } );
             }
 
             @Override
