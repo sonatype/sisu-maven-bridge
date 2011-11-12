@@ -294,24 +294,12 @@
             <Bundle-RequiredExecutionEnvironment>
               J2SE-1.5,JavaSE-1.6
             </Bundle-RequiredExecutionEnvironment>
-            <Export-Package>
-              org.sonatype.sisu.maven.bridge;version=${project.version},
-              org.sonatype.sisu.maven.bridge.resolvers;version=${project.version},
-              org.sonatype.sisu.maven.bridge.support;version=${project.version},
-              org.sonatype.sisu.maven.bridge.support.artifact;version=${project.version}
-            </Export-Package>
             <Include-Resource>
               {maven-resources},
               META-INF/sisu=target/classes/META-INF/sisu
             </Include-Resource>
             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
             <_nouses>true</_nouses>
-            <_removeheaders>
-              Embed-Dependency,Embed-Transitive,
-              Built-By,Tool,Created-By,Build-Jdk,
-              Include-Resource,Private-Package,
-              Bnd-LastModified
-            </_removeheaders>
           </instructions>
         </configuration>
       </plugin>
