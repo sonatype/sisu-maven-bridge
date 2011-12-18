@@ -157,11 +157,17 @@ public abstract class MavenDependencyTreeResolverSupport
             model = assertNotNull( mavenModelResolver, "Maven model resolver is not set" )
                 .resolveModel( modelBuildingRequest, session );
         }
-        catch ( ModelBuildingException e )
+        catch ( final ModelBuildingException e )
         {
             final CollectResult collectResult = new CollectResult( request );
             collectResult.addException( e );
-            throw new DependencyCollectionException( collectResult );
+            throw new DependencyCollectionException( collectResult ){
+                @Override
+                public String getMessage()
+                {
+                    return e.getMessage();
+                }
+            };
         }
         return model;
     }
