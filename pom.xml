@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2010-2011 Sonatype, Inc.
- ~ All rights reserved. This program and the accompanying materials
- ~ are made available under the terms of the Eclipse Public License v1.0
- ~ and Apache License v2.0 which accompanies this distribution.
- ~ The Eclipse Public License is available at
- ~   http://www.eclipse.org/legal/epl-v10.html
- ~ The Apache License v2.0 is available at
- ~   http://www.apache.org/licenses/LICENSE-2.0.html
- ~ You may elect to redistribute this code under either of these licenses.
+
+    Copyright (c) 2009-2011 Sonatype, Inc.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    and Apache License v2.0 which accompanies this distribution.
+    The Eclipse Public License is available at
+      http://www.eclipse.org/legal/epl-v10.html
+    The Apache License v2.0 is available at
+      http://www.apache.org/licenses/LICENSE-2.0.html
+    You may elect to redistribute this code under either of these licenses.
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -17,19 +19,18 @@
   <parent>
     <groupId>org.sonatype.forge</groupId>
     <artifactId>forge-parent</artifactId>
-    <version>8</version>
+    <version>11</version>
   </parent>
 
   <groupId>org.sonatype.sisu</groupId>
   <artifactId>sisu-maven-bridge</artifactId>
-  <version>1.0</version>
-  
+  <version>2.1-SNAPSHOT</version>
+
   <packaging>bundle</packaging>
-  
+
   <name>Sisu :: Maven Bridge</name>
 
-  <url>http://sisu.sonatype.org/</url>
-  <inceptionYear>2010</inceptionYear>
+    <url>https://github.com/sonatype/sisu-maven-bridge</url>
 
   <organization>
     <name>Sonatype</name>
@@ -42,22 +43,20 @@
     <url>http://github.com/sonatype/sisu-maven-bridge</url>
   </scm>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-    <license>
-      <name>Eclipse Public License, Version 1.0</name>
-      <url>http://www.eclipse.org/legal/epl-v10.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+  <ciManagement>
+    <system>Hudson</system>
+    <url>https://builds.sonatype.org/job/sisu-maven-bridge</url>
+  </ciManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <forgeReleaseUrl>https://repository.sonatype.org/service/local/staging/deploy/maven2</forgeReleaseUrl>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+    <build.timestamp>${maven.build.timestamp}</build.timestamp>
+    <build.number />
+
+    <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
   </properties>
 
   <dependencies>
@@ -75,62 +74,231 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.0.3</version>
+      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model-builder</artifactId>
-      <version>3.0.3</version>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-settings-builder</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-aether-provider</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-api</artifactId>
+      <version>1.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-spi</artifactId>
+      <version>1.9</version>
     </dependency>
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-util</artifactId>
-      <version>1.11</version>
+      <version>1.9</version>
     </dependency>
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-impl</artifactId>
-      <version>1.11</version>
+      <version>1.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-connector-asynchttpclient</artifactId>
+      <version>1.9</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sonatype.sisu.litmus</groupId>
+      <artifactId>litmus-testsupport</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.28</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
 
   <build>
+    <defaultGoal>install</defaultGoal>
+
+    <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+
+      <resource>
+        <directory>${project.basedir}/src/main/filtered-resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+
+      <testResource>
+        <directory>${project.basedir}/src/test/filtered-resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+    </testResources>
+
+    <pluginManagement>
+      <plugins>
+        <!--
+        mvn license:format -N
+        If its a new year, update the year range in the header.txt file
+        -->
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <configuration>
+            <aggregate>true</aggregate>
+            <strictCheck>true</strictCheck>
+            <header>${project.basedir}/header.txt</header>
+            <useDefaultExcludes>false</useDefaultExcludes>
+            <includes>
+              <include>**/pom.xml</include>
+              <include>**/*.xml</include>
+              <include>**/*.properties</include>
+              <include>**/*.java</include>
+            </includes>
+            <excludes>
+              <exclude>**/target/**</exclude>
+              <exclude>**/.*/**</exclude>
+            </excludes>
+            <mapping>
+              <java>SLASHSTAR_STYLE</java>
+            </mapping>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
+
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.0.1</version>
+        <executions>
+          <execution>
+            <id>checks</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.0,)</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[1.6,)</version>
+                </requireJavaVersion>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <excludes>
+                    <!-- Keep junit out, use junit-dep instead -->
+                    <exclude>junit:junit</exclude>
+                    <!-- Keep all JCL out, use jcl-over-slf4j instead -->
+                    <exclude>commons-logging:commons-logging</exclude>
+                    <exclude>commons-logging:commons-logging-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>sisu-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>main-index</goal>
+              <goal>test-index</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+            <configuration>
+              <includePom>true</includePom>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.1.0</version>
+        <version>2.0.1</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
             <Bundle-RequiredExecutionEnvironment>
               J2SE-1.5,JavaSE-1.6
             </Bundle-RequiredExecutionEnvironment>
-            <Export-Package>
-              org.sonatype.sisu.maven.bridge;version=${project.version},
-              org.sonatype.sisu.maven.bridge.resolvers;version=${project.version}
-            </Export-Package>
+            <Include-Resource>
+              {maven-resources},
+              META-INF/sisu=target/classes/META-INF/sisu
+            </Include-Resource>
             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
             <_nouses>true</_nouses>
-            <_removeheaders>
-              Embed-Dependency,Embed-Transitive,
-              Built-By,Tool,Created-By,Build-Jdk,
-              Include-Resource,Private-Package,
-              Bnd-LastModified
-            </_removeheaders>
           </instructions>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 
