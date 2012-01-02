@@ -34,7 +34,7 @@ public class RemoteMavenDependencyTreeResolverUsingSettings
     implements MavenDependencyTreeResolver
 {
 
-    private MavenSettings mavenSettings;
+    private final MavenSettingsFactory mavenSettingsFactory;
 
     public RemoteMavenDependencyTreeResolverUsingSettings( final ServiceLocator serviceLocator,
                                                            final MavenSettingsFactory mavenSettingsFactory,
@@ -50,7 +50,7 @@ public class RemoteMavenDependencyTreeResolverUsingSettings
                                                            final @Nullable Provider<RepositorySystemSession> sessionProvider )
     {
         super( serviceLocator, mavenModelResolver, sessionProvider );
-        mavenSettings = mavenSettingsFactory.create();
+        this.mavenSettingsFactory = mavenSettingsFactory;
     }
 
     @Override
@@ -59,6 +59,7 @@ public class RemoteMavenDependencyTreeResolverUsingSettings
                                                  final RemoteRepository... repositories )
         throws DependencyCollectionException
     {
+        final MavenSettings mavenSettings = mavenSettingsFactory.create();
         return super.resolveDependencyTree(
             mavenSettings.inject( request ), mavenSettings.inject( session ), repositories
         );

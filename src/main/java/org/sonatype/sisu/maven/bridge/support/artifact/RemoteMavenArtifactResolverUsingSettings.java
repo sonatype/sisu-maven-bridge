@@ -33,7 +33,7 @@ public class RemoteMavenArtifactResolverUsingSettings
     implements MavenArtifactResolver
 {
 
-    private MavenSettings mavenSettings;
+    private final MavenSettingsFactory mavenSettingsFactory;
 
     public RemoteMavenArtifactResolverUsingSettings( final ServiceLocator serviceLocator,
                                                      final MavenSettingsFactory mavenSettingsFactory )
@@ -47,7 +47,7 @@ public class RemoteMavenArtifactResolverUsingSettings
                                                      final @Nullable Provider<RepositorySystemSession> sessionProvider )
     {
         super( serviceLocator, sessionProvider );
-        mavenSettings = mavenSettingsFactory.create();
+        this.mavenSettingsFactory = mavenSettingsFactory;
     }
 
     @Override
@@ -56,6 +56,7 @@ public class RemoteMavenArtifactResolverUsingSettings
                                   final RemoteRepository... repositories )
         throws ArtifactResolutionException
     {
+        final MavenSettings mavenSettings = mavenSettingsFactory.create();
         return super.doResolve(
             mavenSettings.inject( artifactRequest ), mavenSettings.inject( session ), repositories
         );
