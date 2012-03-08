@@ -29,7 +29,7 @@ import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolverUsingSettings;
 
-@Named( "remote-dependency-resolver-using-settings" )
+@Named( "remote-dependency-tree-resolver-using-settings" )
 @Singleton
 public class RemoteMavenDependencyTreeResolverUsingSettings
     extends RemoteMavenDependencyTreeResolver

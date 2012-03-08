@@ -38,7 +38,7 @@ import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.dependency.internal.MavenDependencyTreeResolverSupport;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolver;
 
-@Named( "remote-dependency-resolver" )
+@Named( "remote-dependency-tree-resolver" )
 @Singleton
 public class RemoteMavenDependencyTreeResolver
     extends MavenDependencyTreeResolverSupport

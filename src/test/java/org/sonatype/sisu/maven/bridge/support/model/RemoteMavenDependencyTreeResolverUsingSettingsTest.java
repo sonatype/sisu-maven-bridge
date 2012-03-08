@@ -39,7 +39,7 @@ public class RemoteMavenDependencyTreeResolverUsingSettingsTest
 {
 
     @Inject
-    @Named( "remote-dependency-resolver-using-settings" )
+    @Named( "remote-dependency-tree-resolver-using-settings" )
     private MavenDependencyTreeResolver resolver;
 
     @Test
