@@ -26,7 +26,6 @@ import org.apache.maven.model.building.ModelBuildingException;
 import org.junit.Test;
 import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
-import com.google.inject.Binder;
 
 /**
  * TODO
