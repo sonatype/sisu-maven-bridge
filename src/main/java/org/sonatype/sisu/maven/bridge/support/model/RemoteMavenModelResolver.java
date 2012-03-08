@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support.model;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -22,6 +23,7 @@ import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
+@Named( "remote-model-resolver" )
 @Singleton
 public class RemoteMavenModelResolver
     extends MavenModelResolverSupport

@@ -14,12 +14,14 @@ package org.sonatype.sisu.maven.bridge.support.model;
 
 import java.io.File;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.MutableLocalMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
+@Named( "mutable-local-model-resolver" )
 @Singleton
 public class MutableLocalMavenModelResolver
     extends MavenModelResolverSupport

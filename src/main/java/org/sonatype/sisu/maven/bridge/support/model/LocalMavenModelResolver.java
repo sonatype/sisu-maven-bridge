@@ -13,12 +13,14 @@
 package org.sonatype.sisu.maven.bridge.support.model;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.LocalMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
+@Named( "local-model-resolver" )
 @Singleton
 public class LocalMavenModelResolver
     extends MavenModelResolverSupport
