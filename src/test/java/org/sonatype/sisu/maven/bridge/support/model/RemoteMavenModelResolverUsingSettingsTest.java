@@ -14,6 +14,7 @@ package org.sonatype.sisu.maven.bridge.support.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.sonatype.sisu.maven.bridge.support.ModelBuildingRequestBuilder.model;
@@ -28,7 +29,7 @@ import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 
 /**
- * TODO
+ * {@link RemoteMavenModelResolverUsingSettings} related UTs.
  *
  * @since 2.0
  */
@@ -40,10 +41,16 @@ public class RemoteMavenModelResolverUsingSettingsTest
     @Named( "remote-model-resolver-using-settings" )
     private MavenModelResolver resolver;
 
+    /**
+     * Test that resolver will resolve the effective model.
+     *
+     * @throws ModelBuildingException - Unexpected
+     */
     @Test
     public void resolve()
         throws ModelBuildingException
     {
+        assertThat( resolver, is( instanceOf( RemoteMavenModelResolverUsingSettings.class ) ) );
         final Model model = resolver.resolveModel( model().pom( "org.sonatype.aether:aether-api:1.9" ) );
         assertThat( model, is( notNullValue() ) );
         // if the following passes means that the parent was resolved and effective model was build

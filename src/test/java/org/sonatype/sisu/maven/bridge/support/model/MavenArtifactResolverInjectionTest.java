@@ -29,11 +29,11 @@ import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolv
 import com.google.inject.Binder;
 
 /**
- * TODO
+ * {@link MavenArtifactResolver} injection related UTs.
  *
- * @since 2.0
+ * @since 2.2
  */
-public class MavenArtifactResolverUsingSettingsUsingExplicitBindingTest
+public class MavenArtifactResolverInjectionTest
     extends InjectedTestSupport
 {
 
@@ -46,15 +46,13 @@ public class MavenArtifactResolverUsingSettingsUsingExplicitBindingTest
         binder.bind( MavenArtifactResolver.class ).to( RemoteMavenArtifactResolverUsingSettings.class );
     }
 
+    /**
+     * Test that the explicit binding is injected.
+     */
     @Test
-    public void resolve()
-        throws ArtifactResolutionException
+    public void boundedResolverIsInjected()
     {
         assertThat( resolver, is( instanceOf( RemoteMavenArtifactResolverUsingSettings.class ) ) );
-        final Artifact artifact = resolver.resolveArtifact(
-            request().artifact( "org.sonatype.aether:aether-api:1.9" )
-        );
-        assertThat( artifact, is( notNullValue() ) );
     }
 
 }

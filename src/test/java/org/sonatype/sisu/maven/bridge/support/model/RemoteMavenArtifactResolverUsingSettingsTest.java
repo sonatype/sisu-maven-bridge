@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.sonatype.sisu.maven.bridge.support.ArtifactRequestBuilder.request;
@@ -25,9 +26,10 @@ import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
+import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolverUsingSettings;
 
 /**
- * TODO
+ * {@link RemoteMavenArtifactResolverUsingSettings} related UTs.
  *
  * @since 2.0
  */
@@ -43,6 +45,7 @@ public class RemoteMavenArtifactResolverUsingSettingsTest
     public void resolve()
         throws ArtifactResolutionException
     {
+        assertThat( resolver, is( instanceOf( RemoteMavenArtifactResolverUsingSettings.class ) ) );
         final Artifact artifact = resolver.resolveArtifact(
             request().artifact( "org.sonatype.aether:aether-api:1.9" )
         );
