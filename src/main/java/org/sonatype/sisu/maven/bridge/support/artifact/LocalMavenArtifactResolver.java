@@ -17,10 +17,13 @@ import static org.sonatype.sisu.maven.bridge.Names.LOCAL_ARTIFACT_RESOLVER_ROOT_
 import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.internal.LocalMavenArtifactResolverSupport;
 
+@Named( "local-artifact-resolver" )
+@Singleton
 public class LocalMavenArtifactResolver
     extends LocalMavenArtifactResolverSupport
     implements MavenArtifactResolver

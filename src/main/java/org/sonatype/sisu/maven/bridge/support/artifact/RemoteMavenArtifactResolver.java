@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -38,6 +39,7 @@ import org.sonatype.sisu.maven.bridge.Names;
 import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.artifact.internal.MavenArtifactResolverSupport;
 
+@Named( "remote-artifact-resolver" )
 @Singleton
 public class RemoteMavenArtifactResolver
     extends MavenArtifactResolverSupport

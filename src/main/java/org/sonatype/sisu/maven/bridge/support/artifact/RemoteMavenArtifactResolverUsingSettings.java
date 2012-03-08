@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support.artifact;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -27,6 +28,7 @@ import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
 
+@Named( "remote-artifact-resolver-using-settings" )
 @Singleton
 public class RemoteMavenArtifactResolverUsingSettings
     extends RemoteMavenArtifactResolver
