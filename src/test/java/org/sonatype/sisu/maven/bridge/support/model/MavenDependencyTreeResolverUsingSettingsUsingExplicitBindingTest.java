@@ -13,35 +13,45 @@
 package org.sonatype.sisu.maven.bridge.support.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.sonatype.sisu.maven.bridge.support.CollectRequestBuilder.tree;
 import static org.sonatype.sisu.maven.bridge.support.ModelBuildingRequestBuilder.model;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.junit.Test;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
+import org.sonatype.sisu.maven.bridge.support.dependency.RemoteMavenDependencyTreeResolverUsingSettings;
+import com.google.inject.Binder;
 
 /**
  * TODO
  *
  * @since 2.0
  */
-public class RemoteMavenDependencyTreeResolverUsingSettingsTest
+public class MavenDependencyTreeResolverUsingSettingsUsingExplicitBindingTest
     extends InjectedTestSupport
 {
 
     @Inject
-    @Named( "remote-dependency-resolver-using-settings" )
     private MavenDependencyTreeResolver resolver;
+
+    @Override
+    public void configure( final Binder binder )
+    {
+        binder.bind( MavenDependencyTreeResolver.class ).to( RemoteMavenDependencyTreeResolverUsingSettings.class );
+    }
 
     @Test
     public void resolve()
         throws Exception
     {
+        assertThat( resolver, is( instanceOf( RemoteMavenDependencyTreeResolverUsingSettings.class ) ) );
         DependencyNode node = resolver.resolveDependencyTree(
             tree().model( model().pom( "org.sonatype.aether:aether-impl:1.9" ) )
         );
