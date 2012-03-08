@@ -13,6 +13,7 @@
 package org.sonatype.sisu.maven.bridge.support.dependency;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -28,6 +29,7 @@ import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolverUsingSettings;
 
+@Named( "remote-dependency-resolver-using-settings" )
 @Singleton
 public class RemoteMavenDependencyTreeResolverUsingSettings
     extends RemoteMavenDependencyTreeResolver

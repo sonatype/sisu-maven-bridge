@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -37,6 +38,7 @@ import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.dependency.internal.MavenDependencyTreeResolverSupport;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolver;
 
+@Named( "remote-dependency-resolver" )
 @Singleton
 public class RemoteMavenDependencyTreeResolver
     extends MavenDependencyTreeResolverSupport
