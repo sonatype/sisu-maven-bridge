@@ -16,9 +16,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.maven.repository.internal.DefaultServiceLocator;
-import org.sonatype.aether.connector.async.AsyncRepositoryConnectorFactory;
+import org.sonatype.aether.connector.wagon.WagonProvider;
+import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.spi.locator.ServiceLocator;
+import org.sonatype.sisu.maven.bridge.internal.HttpWagonProvider;
 import com.google.inject.AbstractModule;
 
 @Named
@@ -33,7 +35,8 @@ public class GuiceModule
         bind( ServiceLocator.class ).toInstance( new DefaultServiceLocator()
         {
             {
-                setService( RepositoryConnectorFactory.class, AsyncRepositoryConnectorFactory.class );
+                setService( RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class );
+                setService( WagonProvider.class, HttpWagonProvider.class );
             }
         } );
     }
