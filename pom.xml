@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.sonatype.forge</groupId>
     <artifactId>forge-parent</artifactId>
-    <version>11</version>
+    <version>12</version>
   </parent>
 
   <groupId>org.sonatype.sisu</groupId>
@@ -49,14 +49,9 @@
   </ciManagement>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
     <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
     <build.timestamp>${maven.build.timestamp}</build.timestamp>
     <build.number />
-
-    <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
   </properties>
 
   <dependencies>
@@ -146,14 +141,24 @@
     <dependency>
       <groupId>org.sonatype.sisu.litmus</groupId>
       <artifactId>litmus-testsupport</artifactId>
-      <version>1.0</version>
+      <version>1.4</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.googlecode.junit-ext</groupId>
+          <artifactId>junit-ext</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.googlecode.junit-ext</groupId>
+          <artifactId>junit-ext</artifactId>
+        </exclusion>        
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.28</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -221,6 +226,7 @@
             <excludes>
               <exclude>**/target/**</exclude>
               <exclude>**/.*/**</exclude>
+              <exclude>atlassian-ide-plugin.xml</exclude>
             </excludes>
             <mapping>
               <java>SLASHSTAR_STYLE</java>
