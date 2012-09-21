@@ -30,7 +30,7 @@
 
   <name>Sisu :: Maven Bridge</name>
 
-    <url>https://github.com/sonatype/sisu-maven-bridge</url>
+  <url>https://github.com/sonatype/sisu-maven-bridge</url>
 
   <organization>
     <name>Sonatype</name>

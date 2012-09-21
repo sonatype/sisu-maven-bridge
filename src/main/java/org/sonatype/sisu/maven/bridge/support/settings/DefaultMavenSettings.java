@@ -270,12 +270,15 @@ public class DefaultMavenSettings
             final DefaultProxySelector ps = new DefaultProxySelector();
             for ( org.apache.maven.settings.Proxy proxy : proxies )
             {
-                ps.add(
-                    new org.sonatype.aether.repository.Proxy(
-                        proxy.getProtocol(), proxy.getHost(), proxy.getPort(), new Authentication(
-                        proxy.getUsername(), proxy.getPassword() )
-                    ), proxy.getNonProxyHosts()
-                );
+                // proxies might be present but deactivated
+                // but for bridge resolution they would be still picked up and used
+                if ( proxy.isActive() )
+                {
+                    ps.add(
+                        new org.sonatype.aether.repository.Proxy( proxy.getProtocol(), proxy.getHost(),
+                            proxy.getPort(), new Authentication( proxy.getUsername(), proxy.getPassword() ) ),
+                        proxy.getNonProxyHosts() );
+                }
             }
             return ps;
         }
