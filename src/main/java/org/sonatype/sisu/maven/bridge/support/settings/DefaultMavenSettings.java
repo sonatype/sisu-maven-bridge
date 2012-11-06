@@ -37,6 +37,7 @@ import org.sonatype.aether.repository.LocalRepositoryManager;
 import org.sonatype.aether.repository.MirrorSelector;
 import org.sonatype.aether.repository.ProxySelector;
 import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.repository.RepositoryPolicy;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.util.repository.DefaultAuthenticationSelector;
 import org.sonatype.aether.util.repository.DefaultMirrorSelector;
@@ -213,15 +214,31 @@ public class DefaultMavenSettings
     {
         final ArrayList<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
         final List<String> activeProfiles = settings.getActiveProfiles();
+        boolean centralIsPresent = false;
         for ( Profile profile : settings.getProfiles() )
         {
             if ( activeProfiles.contains( profile.getId() ) )
             {
                 for ( Repository repository : profile.getRepositories() )
                 {
+                    if ( "central".equals( repository.getId() ) )
+                    {
+                        centralIsPresent = true;
+                    }
                     remoteRepositories.add( RemoteRepositoryBuilder.remoteRepository( repository ) );
                 }
             }
+        }
+        if ( !centralIsPresent )
+        {
+            final RemoteRepository central = RemoteRepositoryBuilder.remoteRepository(
+                "central", "http://repo.maven.apache.org/maven2"
+            );
+            central.setContentType( "default" );
+            central.setPolicy( false, new RepositoryPolicy(
+                true, RepositoryPolicy.UPDATE_POLICY_DAILY, RepositoryPolicy.CHECKSUM_POLICY_WARN )
+            );
+            remoteRepositories.add( central );
         }
         return remoteRepositories;
     }
@@ -276,7 +293,9 @@ public class DefaultMavenSettings
                 {
                     ps.add(
                         new org.sonatype.aether.repository.Proxy( proxy.getProtocol(), proxy.getHost(),
-                            proxy.getPort(), new Authentication( proxy.getUsername(), proxy.getPassword() ) ),
+                                                                  proxy.getPort(),
+                                                                  new Authentication( proxy.getUsername(),
+                                                                                      proxy.getPassword() ) ),
                         proxy.getNonProxyHosts() );
                 }
             }
