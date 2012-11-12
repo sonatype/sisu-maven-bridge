@@ -162,7 +162,7 @@ public class MavenBridgeRepositorySystemSession
     }
 
     @Inject
-    void injectChecksumPolicy( final @Named( "${" + CHECKSUM_POLICY + ":-fail}" ) String checksumPolicy )
+    void injectChecksumPolicy( final @Named( "${" + CHECKSUM_POLICY + ":-warn}" ) String checksumPolicy )
     {
         super.setChecksumPolicy( checksumPolicy );
     }
