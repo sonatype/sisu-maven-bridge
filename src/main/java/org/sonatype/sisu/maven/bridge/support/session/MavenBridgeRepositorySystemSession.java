@@ -145,7 +145,7 @@ public class MavenBridgeRepositorySystemSession
     }
 
     @Inject
-    public void setLocalRepository( final @Nullable @Named( LOCAL_REPOSITORY_DIR ) File localRepository )
+    public void setLocalRepository( final @Nullable @Named( "${" + LOCAL_REPOSITORY_DIR + "}" ) File localRepository )
     {
         if ( localRepository != null )
         {
