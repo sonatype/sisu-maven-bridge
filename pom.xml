@@ -23,12 +23,10 @@
   </parent>
 
   <groupId>org.sonatype.sisu</groupId>
-  <artifactId>sisu-maven-bridge</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <artifactId>sisu-maven-bridge-parent</artifactId>
+  <version>3.0-SNAPSHOT</version>
 
-  <packaging>bundle</packaging>
-
-  <name>Sisu :: Maven Bridge</name>
+  <packaging>pom</packaging>
 
   <url>https://github.com/sonatype/sisu-maven-bridge</url>
 
@@ -51,118 +49,160 @@
   <properties>
     <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
     <build.timestamp>${maven.build.timestamp}</build.timestamp>
-    <build.number />
+    <build.number/>
+
+    <maven.version>3.0.4</maven.version>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-inject-bean</artifactId>
-      <version>2.3.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
-    </dependency>
+  <modules>
+    <module>plugin</module>
+    <module>bridge</module>
+  </modules>
 
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-      <version>3.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model-builder</artifactId>
-      <version>3.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-settings-builder</artifactId>
-      <version>3.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-aether-provider</artifactId>
-      <version>3.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-api</artifactId>
-      <version>1.13.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-spi</artifactId>
-      <version>1.13.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-util</artifactId>
-      <version>1.13.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-impl</artifactId>
-      <version>1.13.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-connector-wagon</artifactId>
-      <version>1.13.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-classworlds</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.sonatype.sisu</groupId>
-          <artifactId>sisu-inject-plexus</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http</artifactId>
-      <version>2.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>1.6.1</version>
-    </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.sonatype.sisu</groupId>
+        <artifactId>sisu-inject-bean</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.1</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.sonatype.sisu.litmus</groupId>
-      <artifactId>litmus-testsupport</artifactId>
-      <version>1.5-SNAPSHOT</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>com.googlecode.junit-ext</groupId>
-          <artifactId>junit-ext</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.googlecode.junit-ext</groupId>
-          <artifactId>junit-ext</artifactId>
-        </exclusion>        
-      </exclusions>
-    </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model-builder</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-settings-builder</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${maven.version}</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-webdav-jackrabbit</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-aether-provider</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-spi</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-util</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-impl</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-connector-wagon</artifactId>
+        <version>1.13.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-classworlds</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-inject-plexus</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http</artifactId>
+        <version>2.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>1.6.1</version>
+      </dependency>
 
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.0</version>
-      <scope>test</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.litmus</groupId>
+        <artifactId>litmus-testsupport</artifactId>
+        <version>1.5-SNAPSHOT</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>com.googlecode.junit-ext</groupId>
+            <artifactId>junit-ext</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.googlecode.junit-ext</groupId>
+            <artifactId>junit-ext</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
 
-  </dependencies>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.0.0</version>
+        <scope>test</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <defaultGoal>install</defaultGoal>
@@ -252,12 +292,17 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>sisu-maven-bridge-maven-plugin</artifactId>
+          <version>3.0-SNAPSHOT</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -273,7 +318,7 @@
         </configuration>
       </plugin>
 
-     <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>1.0.1</version>
@@ -304,20 +349,6 @@
                 </bannedDependencies>
               </rules>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>sisu-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>main-index</goal>
-              <goal>test-index</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
