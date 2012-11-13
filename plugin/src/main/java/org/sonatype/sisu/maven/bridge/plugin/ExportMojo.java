@@ -17,14 +17,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Repository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.StringUtils;
 import com.google.common.io.Closeables;
 
 /**
@@ -70,6 +73,9 @@ public class ExportMojo
             properties, "mavenbridge.localRepository", new File( session.getSettings().getLocalRepository() )
         );
         setIfNotPresent(
+            properties, "mavenbridge.repositories", getRepositories()
+        );
+        setIfNotPresent(
             properties, "mavenbridge.globalSettings", session.getRequest().getGlobalSettingsFile()
         );
         setIfNotPresent(
@@ -81,8 +87,43 @@ public class ExportMojo
         setIfNotPresent(
             properties, "mavenbridge.offline", String.valueOf( session.isOffline() )
         );
+        setIfNotPresent(
+            properties, "mavenbridge.profiles", getProfiles()
+        );
 
         writeProperties( properties );
+    }
+
+    private String getProfiles()
+    {
+        final List<String> profiles = session.getRequest().getActiveProfiles();
+        if ( profiles != null && !profiles.isEmpty() )
+        {
+            return StringUtils.join( session.getRequest().getActiveProfiles().iterator(), "," );
+        }
+        return null;
+    }
+
+    private String getRepositories()
+    {
+        final List<Repository> repositories = project.getRepositories();
+        if ( repositories != null && !repositories.isEmpty() )
+        {
+            final StringBuilder sb = new StringBuilder();
+            for ( final Repository repository : repositories )
+            {
+                if ( sb.length() > 0 )
+                {
+                    sb.append( "," );
+                }
+                sb.append( String.format(
+                    "%s::%s::%s",
+                    repository.getId(), repository.getLayout(), repository.getUrl()
+                ) );
+            }
+            return sb.toString();
+        }
+        return null;
     }
 
     private void setIfNotPresent( final Properties properties, final String key, final String value )
