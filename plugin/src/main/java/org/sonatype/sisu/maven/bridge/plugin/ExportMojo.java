@@ -29,7 +29,7 @@ import com.google.common.io.Closeables;
 
 /**
  * @goal export
- * @phase validate
+ * @phase process-test-resources
  * @requiresDependencyResolution test
  */
 public class ExportMojo
