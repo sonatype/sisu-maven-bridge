@@ -13,9 +13,9 @@
 package org.sonatype.sisu.maven.bridge.support.settings;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.settings.Mirror;
 import org.apache.maven.settings.Profile;
@@ -45,6 +45,7 @@ import org.sonatype.aether.util.repository.DefaultProxySelector;
 import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.RemoteRepositoryBuilder;
+import com.google.common.collect.Maps;
 
 /**
  * TODO
@@ -69,7 +70,8 @@ public class DefaultMavenSettings
 
     public DefaultMavenSettings( final File globalSettings,
                                  final File userSettings,
-                                 final RepositorySystem repositorySystem )
+                                 final RepositorySystem repositorySystem,
+                                 final List<RemoteRepository> repositories )
     {
         this.repositorySystem = repositorySystem;
         final SettingsBuildingRequest settingsRequest = new DefaultSettingsBuildingRequest();
@@ -85,11 +87,11 @@ public class DefaultMavenSettings
             final SettingsBuilder settingsBuilder = new DefaultSettingsBuilderFactory().newInstance();
             Settings settings = settingsBuilder.build( settingsRequest ).getEffectiveSettings();
 
-            repositories = getRepositories( settings );
-            mirrorSelector = createMirrorSelector( settings );
-            authenticationSelector = createAuthenticationSelector( settings );
-            proxySelector = createProxySelector( settings );
-            localRepositoryManager = createLocalRepositoryManager( settings );
+            this.repositories = getRepositories( settings, repositories );
+            this.mirrorSelector = createMirrorSelector( settings );
+            this.authenticationSelector = createAuthenticationSelector( settings );
+            this.proxySelector = createProxySelector( settings );
+            this.localRepositoryManager = createLocalRepositoryManager( settings );
         }
         catch ( SettingsBuildingException e )
         {
@@ -210,37 +212,40 @@ public class DefaultMavenSettings
         };
     }
 
-    private static Collection<RemoteRepository> getRepositories( final Settings settings )
+    private static Collection<RemoteRepository> getRepositories( final Settings settings,
+                                                                 final List<RemoteRepository> repositories )
     {
-        final ArrayList<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+        final Map<String, RemoteRepository> remoteRepositories = Maps.newHashMap();
+
         final List<String> activeProfiles = settings.getActiveProfiles();
-        boolean centralIsPresent = false;
         for ( Profile profile : settings.getProfiles() )
         {
             if ( activeProfiles.contains( profile.getId() ) )
             {
                 for ( Repository repository : profile.getRepositories() )
                 {
-                    if ( "central".equals( repository.getId() ) )
-                    {
-                        centralIsPresent = true;
-                    }
-                    remoteRepositories.add( RemoteRepositoryBuilder.remoteRepository( repository ) );
+                    remoteRepositories.put(
+                        repository.getId(), RemoteRepositoryBuilder.remoteRepository( repository )
+                    );
                 }
             }
         }
-        if ( !centralIsPresent )
+        if ( repositories != null && !repositories.isEmpty() )
+        {
+            for ( final RemoteRepository repository : repositories )
+            {
+                remoteRepositories.put( repository.getId(), repository );
+            }
+        }
+        if ( !remoteRepositories.containsKey( "central" ) )
         {
             final RemoteRepository central = RemoteRepositoryBuilder.remoteRepository(
-                "central", "http://repo.maven.apache.org/maven2"
+                "central", "default", "http://repo.maven.apache.org/maven2"
             );
-            central.setContentType( "default" );
-            central.setPolicy( false, new RepositoryPolicy(
-                true, RepositoryPolicy.UPDATE_POLICY_DAILY, RepositoryPolicy.CHECKSUM_POLICY_WARN )
-            );
-            remoteRepositories.add( central );
+            remoteRepositories.put( "central", central );
         }
-        return remoteRepositories;
+
+        return remoteRepositories.values();
     }
 
     private static MirrorSelector createMirrorSelector( final Settings settings )
@@ -292,11 +297,12 @@ public class DefaultMavenSettings
                 if ( proxy.isActive() )
                 {
                     ps.add(
-                        new org.sonatype.aether.repository.Proxy( proxy.getProtocol(), proxy.getHost(),
-                                                                  proxy.getPort(),
-                                                                  new Authentication( proxy.getUsername(),
-                                                                                      proxy.getPassword() ) ),
-                        proxy.getNonProxyHosts() );
+                        new org.sonatype.aether.repository.Proxy(
+                            proxy.getProtocol(), proxy.getHost(), proxy.getPort(),
+                            new Authentication( proxy.getUsername(), proxy.getPassword() )
+                        ),
+                        proxy.getNonProxyHosts()
+                    );
                 }
             }
             return ps;

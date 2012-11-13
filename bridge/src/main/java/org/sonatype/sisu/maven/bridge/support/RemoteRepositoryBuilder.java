@@ -12,7 +12,6 @@
 
 package org.sonatype.sisu.maven.bridge.support;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.maven.model.Repository;
@@ -30,7 +29,7 @@ public class RemoteRepositoryBuilder
 
     public static RemoteRepository remoteRepository( final String url )
     {
-        return remoteRepository( null, url );
+        return remoteRepository( null, "default", url );
     }
 
     public static RemoteRepository[] remoteRepositories( final Collection<RemoteRepository> repositories )
@@ -42,12 +41,13 @@ public class RemoteRepositoryBuilder
         return repositories.toArray( new RemoteRepository[repositories.size()] );
     }
 
-    public static RemoteRepository remoteRepository( final String id, final String url )
+    public static RemoteRepository remoteRepository( final String id, final String type, final String url )
     {
-        final RemoteRepository remoteRepository = new RemoteRepository();
-        remoteRepository.setId( id );
-        remoteRepository.setUrl( url );
-        return remoteRepository;
+        final RemoteRepository repository = new RemoteRepository( id, type, url );
+        repository.setPolicy( false, new RepositoryPolicy(
+            true, RepositoryPolicy.UPDATE_POLICY_DAILY, RepositoryPolicy.CHECKSUM_POLICY_WARN )
+        );
+        return repository;
     }
 
     public static RemoteRepository remoteRepository( final Repository repository )
@@ -58,16 +58,6 @@ public class RemoteRepositoryBuilder
         remoteRepository.setPolicy( true, convert( repository.getSnapshots() ) );
         remoteRepository.setPolicy( false, convert( repository.getReleases() ) );
         return remoteRepository;
-    }
-
-    public static RemoteRepository[] remoteRepositories( final Repository... repositories )
-    {
-        final ArrayList<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-        for ( Repository repository : repositories )
-        {
-            remoteRepositories.add( remoteRepository( repository ) );
-        }
-        return remoteRepositories.toArray( new RemoteRepository[remoteRepositories.size()] );
     }
 
     public static RemoteRepository remoteRepository( final org.apache.maven.settings.Repository repository )
