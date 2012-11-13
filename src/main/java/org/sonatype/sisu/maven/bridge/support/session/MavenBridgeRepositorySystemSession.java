@@ -12,7 +12,10 @@
 
 package org.sonatype.sisu.maven.bridge.support.session;
 
-import static org.sonatype.sisu.maven.bridge.Names.*;
+import static org.sonatype.sisu.maven.bridge.Names.CHECKSUM_POLICY;
+import static org.sonatype.sisu.maven.bridge.Names.LOCAL_REPOSITORY_DIR;
+import static org.sonatype.sisu.maven.bridge.Names.LOCAL_REPOSITORY_DIR_MAVEN;
+import static org.sonatype.sisu.maven.bridge.Names.UPDATE_POLICY;
 
 import java.io.File;
 import javax.inject.Inject;
@@ -145,12 +148,20 @@ public class MavenBridgeRepositorySystemSession
     }
 
     @Inject
-    public void setLocalRepository( final @Nullable @Named( "${" + LOCAL_REPOSITORY_DIR + "}" ) File localRepository )
+    public void setLocalRepository(
+        final @Nullable @Named( "${" + LOCAL_REPOSITORY_DIR + "}" ) File localRepository,
+        final @Nullable @Named( "${" + LOCAL_REPOSITORY_DIR_MAVEN + "}" ) File localRepositoryMaven )
     {
         if ( localRepository != null )
         {
             setLocalRepositoryManager( repositorySystem.newLocalRepositoryManager(
                 new LocalRepository( localRepository ) )
+            );
+        }
+        else if ( localRepositoryMaven != null )
+        {
+            setLocalRepositoryManager( repositorySystem.newLocalRepositoryManager(
+                new LocalRepository( localRepositoryMaven ) )
             );
         }
     }

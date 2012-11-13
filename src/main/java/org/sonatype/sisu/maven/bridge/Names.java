@@ -17,17 +17,19 @@ import java.io.File;
 public interface Names
 {
 
-    static final String LOCAL_ARTIFACT_RESOLVER_ROOT_DIR = "maven.localArtifactResolver.rootDir";
+    static final String LOCAL_ARTIFACT_RESOLVER_ROOT_DIR = "maven.bridge.localArtifactResolver.rootDir";
 
-    static final String LOCAL_REPOSITORY_DIR = "maven.repo.local";
+    static final String LOCAL_REPOSITORY_DIR = "maven.bridge.localRepository";
 
-    static final String UPDATE_POLICY = "maven.updatePolicy";
+    static final String LOCAL_REPOSITORY_DIR_MAVEN = "maven.repo.local";
 
-    static final String CHECKSUM_POLICY = "maven.checksumPolicy";
+    static final String UPDATE_POLICY = "maven.bridge.updatePolicy";
 
-    static final String GLOBAL_SETTINGS = "maven.globalSettings";
+    static final String CHECKSUM_POLICY = "maven.bridge.checksumPolicy";
 
-    static final String USER_SETTINGS = "maven.userSettings";
+    static final String GLOBAL_SETTINGS = "maven.bridge.globalSettings";
+
+    static final String USER_SETTINGS = "maven.bridge.userSettings";
 
     static final String USER_HOME = System.getProperty( "user.home" );
 
