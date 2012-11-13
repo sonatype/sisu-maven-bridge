@@ -33,6 +33,8 @@ public interface Names
 
     static final String REPOSITORIES = "mavenbridge.repositories";
 
+    static final String OFFLINE = "mavenbridge.offline";
+
     static final String USER_HOME = System.getProperty( "user.home" );
 
     static final String USER_DIR = System.getProperty( "user.dir", "" );

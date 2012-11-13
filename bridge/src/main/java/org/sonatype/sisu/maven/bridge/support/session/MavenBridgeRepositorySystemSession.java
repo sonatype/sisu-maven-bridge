@@ -16,6 +16,7 @@ import static org.sonatype.sisu.maven.bridge.Names.CHECKSUM_POLICY;
 import static org.sonatype.sisu.maven.bridge.Names.LOCAL_REPOSITORY_DIR;
 import static org.sonatype.sisu.maven.bridge.Names.LOCAL_REPOSITORY_DIR_MAVEN;
 import static org.sonatype.sisu.maven.bridge.Names.UPDATE_POLICY;
+import static org.sonatype.sisu.maven.bridge.Names.OFFLINE;
 
 import java.io.File;
 import javax.inject.Inject;
@@ -176,6 +177,12 @@ public class MavenBridgeRepositorySystemSession
     void injectChecksumPolicy( final @Named( "${" + CHECKSUM_POLICY + ":-warn}" ) String checksumPolicy )
     {
         super.setChecksumPolicy( checksumPolicy );
+    }
+
+    @Inject
+    void injectOffline( final @Named( "${" + OFFLINE  + ":-false}" ) Boolean offline )
+    {
+        super.setOffline( offline );
     }
 
     protected Logger log()
