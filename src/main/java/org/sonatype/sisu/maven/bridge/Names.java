@@ -17,8 +17,6 @@ import java.io.File;
 public interface Names
 {
 
-    static final String LOCAL_MODEL_RESOLVER_ROOT_DIR = "maven.localModelResolver.rootDir";
-
     static final String LOCAL_ARTIFACT_RESOLVER_ROOT_DIR = "maven.localArtifactResolver.rootDir";
 
     static final String LOCAL_REPOSITORY_DIR = "maven.repo.local";
