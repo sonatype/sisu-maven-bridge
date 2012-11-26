@@ -280,6 +280,12 @@
           <artifactId>sisu-maven-bridge-maven-plugin</artifactId>
           <version>3.0-SNAPSHOT</version>
         </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <tagNameFormat>sisu-maven-bridge-@{version}</tagNameFormat>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
