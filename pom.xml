@@ -188,13 +188,9 @@
       <dependency>
         <groupId>org.sonatype.sisu.litmus</groupId>
         <artifactId>litmus-testsupport</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5</version>
         <scope>test</scope>
         <exclusions>
-          <exclusion>
-            <groupId>com.googlecode.junit-ext</groupId>
-            <artifactId>junit-ext</artifactId>
-          </exclusion>
           <exclusion>
             <groupId>com.googlecode.junit-ext</groupId>
             <artifactId>junit-ext</artifactId>
