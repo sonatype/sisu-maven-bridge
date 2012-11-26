@@ -26,7 +26,7 @@
   <artifactId>sisu-maven-bridge-parent</artifactId>
   <packaging>pom</packaging>
   <version>3.0-SNAPSHOT</version>
-  <name>Sonatype Forge Parent Pom</name>
+  <name>${project.artifactId}</name>
 
   <inceptionYear>2011</inceptionYear>
   <url>https://github.com/sonatype/sisu-maven-bridge</url>
