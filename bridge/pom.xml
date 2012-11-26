@@ -24,8 +24,8 @@
 
   <groupId>org.sonatype.sisu</groupId>
   <artifactId>sisu-maven-bridge</artifactId>
-
   <packaging>bundle</packaging>
+  <description>sisu-maven-bridge</description>
 
   <dependencies>
     <dependency>
