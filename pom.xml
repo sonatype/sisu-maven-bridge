@@ -25,7 +25,7 @@
   <groupId>org.sonatype.sisu</groupId>
   <artifactId>sisu-maven-bridge-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.0</version>
+  <version>3.0.1-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
   <inceptionYear>2011</inceptionYear>
@@ -278,7 +278,7 @@
         <plugin>
           <groupId>org.sonatype.plugins</groupId>
           <artifactId>sisu-maven-bridge-maven-plugin</artifactId>
-          <version>3.0</version>
+          <version>3.0.1-SNAPSHOT</version>
         </plugin>
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
