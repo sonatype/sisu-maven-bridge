@@ -61,9 +61,7 @@ public abstract class LocalMavenArtifactResolverSupport
             throw new ArtifactResolutionException( Arrays.asList( artifactResult ) );
         }
 
-        artifactRequest.getArtifact().setFile( file );
-
-        return artifactRequest.getArtifact();
+        return artifactRequest.getArtifact().setFile( file );
     }
 
     protected abstract File getBaseDir();
