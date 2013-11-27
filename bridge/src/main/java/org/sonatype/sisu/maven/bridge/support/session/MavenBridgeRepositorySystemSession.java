@@ -13,6 +13,7 @@ package org.sonatype.sisu.maven.bridge.support.session;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -25,7 +26,6 @@ import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.aether.transfer.AbstractTransferListener;
 import org.sonatype.aether.transfer.TransferCancelledException;
 import org.sonatype.aether.transfer.TransferEvent;
-import org.sonatype.inject.Nullable;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
 import org.slf4j.Logger;

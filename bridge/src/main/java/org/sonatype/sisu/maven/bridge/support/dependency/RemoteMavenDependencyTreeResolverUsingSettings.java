@@ -11,6 +11,7 @@
  */
 package org.sonatype.sisu.maven.bridge.support.dependency;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -22,7 +23,6 @@ import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.spi.locator.ServiceLocator;
-import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;

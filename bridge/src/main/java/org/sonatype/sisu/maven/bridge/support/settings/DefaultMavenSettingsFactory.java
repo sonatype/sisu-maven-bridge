@@ -14,13 +14,13 @@ package org.sonatype.sisu.maven.bridge.support.settings;
 import java.io.File;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.spi.locator.ServiceLocator;
-import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
 
