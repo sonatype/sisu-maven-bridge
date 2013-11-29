@@ -17,9 +17,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.sonatype.forge</groupId>
-    <artifactId>forge-parent</artifactId>
-    <version>21</version>
+    <groupId>org.sonatype.buildsupport</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>5</version>
   </parent>
 
   <groupId>org.sonatype.sisu</groupId>
@@ -56,9 +56,6 @@
   </ciManagement>
 
   <properties>
-    <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
-    <build.timestamp>${maven.build.timestamp}</build.timestamp>
-    <build.number />
     <maven.version>3.0.4</maven.version>
   </properties>
 
@@ -281,6 +278,23 @@
           <version>3.0.1-SNAPSHOT</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <configuration>
+            <instructions>
+              <Bundle-RequiredExecutionEnvironment>
+                JavaSE-1.6,JavaSE-1.7
+              </Bundle-RequiredExecutionEnvironment>
+              <Include-Resource>
+                {maven-resources},
+                META-INF/sisu=target/classes/META-INF/sisu
+              </Include-Resource>
+              <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+              <_nouses>true</_nouses>
+            </instructions>
+          </configuration>
+        </plugin>
+        <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
             <tagNameFormat>sisu-maven-bridge-@{version}</tagNameFormat>
@@ -290,15 +304,6 @@
     </pluginManagement>
 
     <plugins>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -347,26 +352,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.0.1</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-RequiredExecutionEnvironment>
-              J2SE-1.5,JavaSE-1.6
-            </Bundle-RequiredExecutionEnvironment>
-            <Include-Resource>
-              {maven-resources},
-              META-INF/sisu=target/classes/META-INF/sisu
-            </Include-Resource>
-            <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-            <_nouses>true</_nouses>
-          </instructions>
-        </configuration>
       </plugin>
 
     </plugins>
