@@ -27,47 +27,38 @@ public abstract class MavenArtifactResolverSupport
     implements MavenArtifactResolver
 {
 
-    protected static final Provider<RepositorySystemSession> NO_SESSION_PROVIDER = null;
+  protected static final Provider<RepositorySystemSession> NO_SESSION_PROVIDER = null;
 
-    private Provider<RepositorySystemSession> sessionProvider;
+  private Provider<RepositorySystemSession> sessionProvider;
 
-    protected MavenArtifactResolverSupport()
-    {
-        this( NO_SESSION_PROVIDER );
-    }
+  protected MavenArtifactResolverSupport() {
+    this(NO_SESSION_PROVIDER);
+  }
 
-    protected MavenArtifactResolverSupport( @Nullable final Provider<RepositorySystemSession> sessionProvider )
-    {
-        this.sessionProvider = sessionProvider;
-    }
+  protected MavenArtifactResolverSupport(@Nullable final Provider<RepositorySystemSession> sessionProvider) {
+    this.sessionProvider = sessionProvider;
+  }
 
-    @Override
-    public Artifact resolveArtifact( final ArtifactRequest artifactRequest,
-                                     final RepositorySystemSession session,
-                                     final RemoteRepository... repositories )
-        throws ArtifactResolutionException
-    {
-        assertNotNull( session, session.getClass() );
+  @Override
+  public Artifact resolveArtifact(final ArtifactRequest artifactRequest, final RepositorySystemSession session,
+      final RemoteRepository... repositories) throws ArtifactResolutionException
+  {
+    assertNotNull(session, session.getClass());
 
-        return doResolve( artifactRequest, session );
-    }
+    return doResolve(artifactRequest, session);
+  }
 
-    // ==
+  // ==
 
-    @Override
-    public Artifact resolveArtifact( final ArtifactRequest artifactRequest,
-                                     final RemoteRepository... repositories )
-        throws ArtifactResolutionException
-    {
-        return resolveArtifact(
-            artifactRequest,
-            assertNotNull( sessionProvider, "Repository system session provider not specified" ).get()
-        );
-    }
+  @Override
+  public Artifact resolveArtifact(final ArtifactRequest artifactRequest, final RemoteRepository... repositories)
+      throws ArtifactResolutionException
+  {
+    return resolveArtifact(artifactRequest,
+        assertNotNull(sessionProvider, "Repository system session provider not specified").get());
+  }
 
-    protected abstract Artifact doResolve( final ArtifactRequest artifactRequest,
-                                           final RepositorySystemSession session,
-                                           final RemoteRepository... repositories )
-        throws ArtifactResolutionException;
+  protected abstract Artifact doResolve(final ArtifactRequest artifactRequest, final RepositorySystemSession session,
+      final RemoteRepository... repositories) throws ArtifactResolutionException;
 
 }

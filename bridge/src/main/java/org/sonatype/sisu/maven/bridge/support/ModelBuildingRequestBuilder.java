@@ -11,56 +11,50 @@
  */
 package org.sonatype.sisu.maven.bridge.support;
 
-import static org.sonatype.sisu.maven.bridge.support.ArtifactRequestBuilder.request;
-
 import java.io.File;
+
+import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport.ArtifactModelSource;
 
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelBuildingRequest;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport.ArtifactModelSource;
+
+import static org.sonatype.sisu.maven.bridge.support.ArtifactRequestBuilder.request;
 
 /**
  * TODO
- *
+ * 
  * @since 1.0
  */
 public class ModelBuildingRequestBuilder
     extends DefaultModelBuildingRequest
 {
 
-    private ModelBuildingRequestBuilder()
-    {
-        setSystemProperties( System.getProperties() );
-        setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
-        setLocationTracking( false );
-        setProcessPlugins( false );
-    }
+  private ModelBuildingRequestBuilder() {
+    setSystemProperties(System.getProperties());
+    setValidationLevel(ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL);
+    setLocationTracking(false);
+    setProcessPlugins(false);
+  }
 
-    public static ModelBuildingRequestBuilder model()
-    {
-        return new ModelBuildingRequestBuilder();
-    }
+  public static ModelBuildingRequestBuilder model() {
+    return new ModelBuildingRequestBuilder();
+  }
 
-    public ModelBuildingRequestBuilder pom( final File pom )
-    {
-        setModelSource( new FileModelSource( pom ) );
-        return this;
-    }
+  public ModelBuildingRequestBuilder pom(final File pom) {
+    setModelSource(new FileModelSource(pom));
+    return this;
+  }
 
-    public ModelBuildingRequestBuilder pom( final String coordinates )
-    {
-        final Artifact artifact = request().artifact( coordinates ).getArtifact();
-        return pom( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
-    }
+  public ModelBuildingRequestBuilder pom(final String coordinates) {
+    final Artifact artifact = request().artifact(coordinates).getArtifact();
+    return pom(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
+  }
 
-    public ModelBuildingRequestBuilder pom( final String groupId,
-                                            final String artifactId,
-                                            final String version )
-    {
-        setModelSource( new ArtifactModelSource( request().artifact( groupId, artifactId, version, "pom" ) ) );
-        return this;
-    }
+  public ModelBuildingRequestBuilder pom(final String groupId, final String artifactId, final String version) {
+    setModelSource(new ArtifactModelSource(request().artifact(groupId, artifactId, version, "pom")));
+    return this;
+  }
 
 }

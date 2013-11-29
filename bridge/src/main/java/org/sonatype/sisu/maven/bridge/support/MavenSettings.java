@@ -17,17 +17,17 @@ import org.sonatype.aether.resolution.ArtifactRequest;
 
 /**
  * Maven settings.
- *
+ * 
  * @author adreghiciu
  * @since 2.0
  */
 public interface MavenSettings
 {
 
-    ArtifactRequest inject( ArtifactRequest request );
+  ArtifactRequest inject(ArtifactRequest request);
 
-    CollectRequest inject( CollectRequest request );
+  CollectRequest inject(CollectRequest request);
 
-    RepositorySystemSession inject( RepositorySystemSession session );
+  RepositorySystemSession inject(RepositorySystemSession session);
 
 }

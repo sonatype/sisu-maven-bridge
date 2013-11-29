@@ -17,7 +17,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 /**
  * TODO
- *
+ * 
  * @author adreghiciu
  * @since 2.0
  */
@@ -25,50 +25,38 @@ public class ArtifactRequestBuilder
     extends ArtifactRequest
 {
 
-    public static ArtifactRequestBuilder request()
-    {
-        return new ArtifactRequestBuilder();
-    }
+  public static ArtifactRequestBuilder request() {
+    return new ArtifactRequestBuilder();
+  }
 
-    public ArtifactRequestBuilder artifact( final String coordinates )
-    {
-        setArtifact( new DefaultArtifact( coordinates ) );
-        return this;
-    }
+  public ArtifactRequestBuilder artifact(final String coordinates) {
+    setArtifact(new DefaultArtifact(coordinates));
+    return this;
+  }
 
-    public ArtifactRequestBuilder artifact( final String groupId,
-                                            final String artifactId,
-                                            final String version,
-                                            final String extension,
-                                            final String classifier )
-    {
-        setArtifact( new DefaultArtifact( groupId, artifactId, classifier, extension, version ) );
-        return this;
-    }
+  public ArtifactRequestBuilder artifact(final String groupId, final String artifactId, final String version,
+      final String extension, final String classifier)
+  {
+    setArtifact(new DefaultArtifact(groupId, artifactId, classifier, extension, version));
+    return this;
+  }
 
-    public ArtifactRequestBuilder artifact( final String groupId,
-                                            final String artifactId,
-                                            final String version,
-                                            final String extension )
-    {
-        setArtifact( new DefaultArtifact( groupId, artifactId, extension, version ) );
-        return this;
-    }
+  public ArtifactRequestBuilder artifact(final String groupId, final String artifactId, final String version,
+      final String extension)
+  {
+    setArtifact(new DefaultArtifact(groupId, artifactId, extension, version));
+    return this;
+  }
 
-    public ArtifactRequestBuilder artifact( final String groupId,
-                                            final String artifactId,
-                                            final String version )
-    {
-        return artifact( groupId, artifactId, version, "jar" );
-    }
+  public ArtifactRequestBuilder artifact(final String groupId, final String artifactId, final String version) {
+    return artifact(groupId, artifactId, version, "jar");
+  }
 
-    public ArtifactRequestBuilder repository( final RemoteRepository... repositories )
-    {
-        for ( RemoteRepository repository : repositories )
-        {
-            addRepository( repository );
-        }
-        return this;
+  public ArtifactRequestBuilder repository(final RemoteRepository... repositories) {
+    for (RemoteRepository repository : repositories) {
+      addRepository(repository);
     }
+    return this;
+  }
 
 }

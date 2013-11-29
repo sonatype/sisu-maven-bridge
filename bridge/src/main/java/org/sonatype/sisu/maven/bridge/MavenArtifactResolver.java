@@ -19,38 +19,35 @@ import org.sonatype.aether.resolution.ArtifactResolutionException;
 
 /**
  * Resolves maven artifacts.
- *
+ * 
  * @since 2.0
  */
 public interface MavenArtifactResolver
 {
 
-    /**
-     * Resolves an artifact given its coordinates.
-     *
-     * @param request      artifact request
-     * @param repositories repositories to be used to resolve the artifacts
-     * @return resolved artifact
-     * @throws ArtifactResolutionException If artifact cannot be resolved
-     * @since 2.0
-     */
-    Artifact resolveArtifact( ArtifactRequest request,
-                              RemoteRepository... repositories )
-        throws ArtifactResolutionException;
+  /**
+   * Resolves an artifact given its coordinates.
+   * 
+   * @param request artifact request
+   * @param repositories repositories to be used to resolve the artifacts
+   * @return resolved artifact
+   * @throws ArtifactResolutionException If artifact cannot be resolved
+   * @since 2.0
+   */
+  Artifact resolveArtifact(ArtifactRequest request, RemoteRepository... repositories)
+      throws ArtifactResolutionException;
 
-    /**
-     * Resolves an artifact given its coordinates.
-     *
-     * @param request      artifact request
-     * @param session      session to be used while resolving
-     * @param repositories repositories to be used to resolve the artifacts
-     * @return resolved artifact
-     * @throws ArtifactResolutionException If artifact cannot be resolved
-     * @since 2.0
-     */
-    Artifact resolveArtifact( ArtifactRequest request,
-                              RepositorySystemSession session,
-                              RemoteRepository... repositories )
-        throws ArtifactResolutionException;
+  /**
+   * Resolves an artifact given its coordinates.
+   * 
+   * @param request artifact request
+   * @param session session to be used while resolving
+   * @param repositories repositories to be used to resolve the artifacts
+   * @return resolved artifact
+   * @throws ArtifactResolutionException If artifact cannot be resolved
+   * @since 2.0
+   */
+  Artifact resolveArtifact(ArtifactRequest request, RepositorySystemSession session, RemoteRepository... repositories)
+      throws ArtifactResolutionException;
 
 }

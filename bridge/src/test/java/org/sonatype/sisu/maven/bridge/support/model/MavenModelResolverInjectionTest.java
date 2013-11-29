@@ -11,42 +11,41 @@
  */
 package org.sonatype.sisu.maven.bridge.support.model;
 
+import javax.inject.Inject;
+
+import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
+import org.sonatype.sisu.maven.bridge.MavenModelResolver;
+
+import com.google.inject.Binder;
+import org.junit.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
-import javax.inject.Inject;
-
-import org.junit.Test;
-import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
-import org.sonatype.sisu.maven.bridge.MavenModelResolver;
-import com.google.inject.Binder;
-
 /**
  * {@link MavenModelResolver} injection related UTs.
- *
+ * 
  * @since 2.2
  */
 public class MavenModelResolverInjectionTest
     extends InjectedTestSupport
 {
 
-    @Inject
-    private MavenModelResolver resolver;
+  @Inject
+  private MavenModelResolver resolver;
 
-    @Override
-    public void configure( final Binder binder )
-    {
-        binder.bind( MavenModelResolver.class ).to( RemoteMavenModelResolverUsingSettings.class );
-    }
+  @Override
+  public void configure(final Binder binder) {
+    binder.bind(MavenModelResolver.class).to(RemoteMavenModelResolverUsingSettings.class);
+  }
 
-    /**
-     * Test that the explicit binding is injected.
-     */
-    @Test
-    public void boundedResolverIsInjected()
-    {
-        assertThat( resolver, is( instanceOf( RemoteMavenModelResolverUsingSettings.class ) ) );
-    }
+  /**
+   * Test that the explicit binding is injected.
+   */
+  @Test
+  public void boundedResolverIsInjected() {
+    assertThat(resolver, is(instanceOf(RemoteMavenModelResolverUsingSettings.class)));
+  }
 
 }

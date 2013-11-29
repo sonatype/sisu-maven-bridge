@@ -16,34 +16,34 @@ import java.io.File;
 public interface Names
 {
 
-    static final String LOCAL_ARTIFACT_RESOLVER_ROOT_DIR = "mavenbridge.localArtifactResolver.rootDir";
+  static final String LOCAL_ARTIFACT_RESOLVER_ROOT_DIR = "mavenbridge.localArtifactResolver.rootDir";
 
-    static final String LOCAL_REPOSITORY_DIR = "mavenbridge.localRepository";
+  static final String LOCAL_REPOSITORY_DIR = "mavenbridge.localRepository";
 
-    static final String LOCAL_REPOSITORY_DIR_MAVEN = "maven.repo.local";
+  static final String LOCAL_REPOSITORY_DIR_MAVEN = "maven.repo.local";
 
-    static final String UPDATE_POLICY = "mavenbridge.updatePolicy";
+  static final String UPDATE_POLICY = "mavenbridge.updatePolicy";
 
-    static final String CHECKSUM_POLICY = "mavenbridge.checksumPolicy";
+  static final String CHECKSUM_POLICY = "mavenbridge.checksumPolicy";
 
-    static final String GLOBAL_SETTINGS = "mavenbridge.globalSettings";
+  static final String GLOBAL_SETTINGS = "mavenbridge.globalSettings";
 
-    static final String USER_SETTINGS = "mavenbridge.userSettings";
+  static final String USER_SETTINGS = "mavenbridge.userSettings";
 
-    static final String REPOSITORIES = "mavenbridge.repositories";
+  static final String REPOSITORIES = "mavenbridge.repositories";
 
-    static final String OFFLINE = "mavenbridge.offline";
+  static final String OFFLINE = "mavenbridge.offline";
 
-    static final String USER_HOME = System.getProperty( "user.home" );
+  static final String USER_HOME = System.getProperty("user.home");
 
-    static final String USER_DIR = System.getProperty( "user.dir", "" );
+  static final String USER_DIR = System.getProperty("user.dir", "");
 
-    static final String MAVEN_HOME = System.getProperty( "maven.home", USER_DIR );
+  static final String MAVEN_HOME = System.getProperty("maven.home", USER_DIR);
 
-    static final File MAVEN_USER_HOME = new File( USER_HOME, ".m2" );
+  static final File MAVEN_USER_HOME = new File(USER_HOME, ".m2");
 
-    static final File DEFAULT_USER_SETTINGS_FILE = new File( MAVEN_USER_HOME, "settings.xml" );
+  static final File DEFAULT_USER_SETTINGS_FILE = new File(MAVEN_USER_HOME, "settings.xml");
 
-    static final File DEFAULT_GLOBAL_SETTINGS_FILE = new File( MAVEN_HOME, "conf/settings.xml" );
+  static final File DEFAULT_GLOBAL_SETTINGS_FILE = new File(MAVEN_HOME, "conf/settings.xml");
 
 }

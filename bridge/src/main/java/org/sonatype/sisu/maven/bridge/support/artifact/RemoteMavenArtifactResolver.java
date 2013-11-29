@@ -11,12 +11,11 @@
  */
 package org.sonatype.sisu.maven.bridge.support.artifact;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -38,74 +37,65 @@ import org.sonatype.sisu.maven.bridge.Names;
 import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.artifact.internal.MavenArtifactResolverSupport;
 
-@Named( "remote-artifact-resolver" )
+import static java.util.Arrays.asList;
+
+@Named("remote-artifact-resolver")
 @Singleton
 public class RemoteMavenArtifactResolver
     extends MavenArtifactResolverSupport
     implements MavenArtifactResolver
 {
 
-    static final boolean RECESSIVE_IS_RAW = true;
+  static final boolean RECESSIVE_IS_RAW = true;
 
-    private RepositorySystem repositorySystem;
+  private RepositorySystem repositorySystem;
 
-    private RemoteRepositoryManager remoteRepositoryManager;
+  private RemoteRepositoryManager remoteRepositoryManager;
 
-    public RemoteMavenArtifactResolver( final ServiceLocator serviceLocator )
-    {
-        this( serviceLocator, NO_SESSION_PROVIDER );
+  public RemoteMavenArtifactResolver(final ServiceLocator serviceLocator) {
+    this(serviceLocator, NO_SESSION_PROVIDER);
+  }
+
+  @Inject
+  public RemoteMavenArtifactResolver(final ServiceLocator serviceLocator,
+      final @Nullable Provider<RepositorySystemSession> sessionProvider)
+  {
+    super(sessionProvider);
+    repositorySystem = serviceLocator.getService(RepositorySystem.class);
+    remoteRepositoryManager = serviceLocator.getService(RemoteRepositoryManager.class);
+  }
+
+  @Override
+  protected Artifact doResolve(final ArtifactRequest artifactRequest, final RepositorySystemSession session,
+      final RemoteRepository... repositories) throws ArtifactResolutionException
+  {
+
+    final List<RemoteRepository> allRepositories = new ArrayList<RemoteRepository>();
+    if (repositories != null && repositories.length > 0) {
+      allRepositories.addAll(asList(repositories));
     }
+    allRepositories.addAll(artifactRequest.getRepositories());
 
-    @Inject
-    public RemoteMavenArtifactResolver( final ServiceLocator serviceLocator,
-                                        final @Nullable Provider<RepositorySystemSession> sessionProvider )
-    {
-        super( sessionProvider );
-        repositorySystem = serviceLocator.getService( RepositorySystem.class );
-        remoteRepositoryManager = serviceLocator.getService( RemoteRepositoryManager.class );
-    }
+    artifactRequest.setRepositories(remoteRepositoryManager.aggregateRepositories(session,
+        Collections.<RemoteRepository> emptyList(), allRepositories, RECESSIVE_IS_RAW));
 
-    @Override
-    protected Artifact doResolve( final ArtifactRequest artifactRequest,
-                                  final RepositorySystemSession session,
-                                  final RemoteRepository... repositories )
-        throws ArtifactResolutionException
-    {
+    RepositorySystemSession safeSession = session;
+    if (session.getLocalRepositoryManager() == null || session.getLocalRepository() == null) {
+      safeSession = new RepositorySystemSessionWrapper(session)
+      {
+        final LocalRepositoryManager lrm = repositorySystem.newLocalRepositoryManager(new LocalRepository(new File(
+            Names.MAVEN_USER_HOME, "repository")));
 
-        final List<RemoteRepository> allRepositories = new ArrayList<RemoteRepository>();
-        if ( repositories != null && repositories.length > 0 )
-        {
-            allRepositories.addAll( asList( repositories ) );
+        public LocalRepositoryManager getLocalRepositoryManager() {
+          return lrm;
         }
-        allRepositories.addAll( artifactRequest.getRepositories() );
 
-        artifactRequest.setRepositories(
-            remoteRepositoryManager.aggregateRepositories(
-                session, Collections.<RemoteRepository>emptyList(), allRepositories, RECESSIVE_IS_RAW
-            )
-        );
-
-        RepositorySystemSession safeSession = session;
-        if ( session.getLocalRepositoryManager() == null || session.getLocalRepository() == null )
-        {
-            safeSession = new RepositorySystemSessionWrapper( session )
-            {
-                final LocalRepositoryManager lrm = repositorySystem.newLocalRepositoryManager(
-                    new LocalRepository( new File( Names.MAVEN_USER_HOME, "repository" ) )
-                );
-
-                public LocalRepositoryManager getLocalRepositoryManager()
-                {
-                    return lrm;
-                }
-
-                public LocalRepository getLocalRepository()
-                {
-                    return lrm.getRepository();
-                }
-            };
+        public LocalRepository getLocalRepository() {
+          return lrm.getRepository();
         }
-        return repositorySystem.resolveArtifact( safeSession, artifactRequest ).getArtifact();
+      };
     }
+    return repositorySystem.resolveArtifact(safeSession, artifactRequest).getArtifact();
+  }
 
 }

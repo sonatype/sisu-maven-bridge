@@ -11,7 +11,6 @@
  */
 package org.sonatype.sisu.maven.bridge;
 
-import org.apache.maven.model.Repository;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.DependencyCollectionException;
@@ -20,36 +19,33 @@ import org.sonatype.aether.repository.RemoteRepository;
 
 /**
  * Resolves maven dependency trees.
- *
+ * 
  * @since 2.0
  */
 public interface MavenDependencyTreeResolver
 {
 
-    /**
-     * Builds the dependency transitive hull.
-     *
-     * @param request      dependency tree request
-     * @param repositories repositories to use while resolving
-     * @return resolved dependency tree
-     * @throws DependencyCollectionException If dependencies could nto be resolved
-     */
-    DependencyNode resolveDependencyTree( CollectRequest request,
-                                          RemoteRepository... repositories )
-        throws DependencyCollectionException;
+  /**
+   * Builds the dependency transitive hull.
+   * 
+   * @param request dependency tree request
+   * @param repositories repositories to use while resolving
+   * @return resolved dependency tree
+   * @throws DependencyCollectionException If dependencies could nto be resolved
+   */
+  DependencyNode resolveDependencyTree(CollectRequest request, RemoteRepository... repositories)
+      throws DependencyCollectionException;
 
-    /**
-     * Builds the dependency transitive hull.
-     *
-     * @param request      dependency tree request
-     * @param session      session to be used while resolving
-     * @param repositories repositories to use while resolving
-     * @return resolved dependency tree
-     * @throws DependencyCollectionException If dependencies could nto be resolved
-     */
-    DependencyNode resolveDependencyTree( CollectRequest request,
-                                          RepositorySystemSession session,
-                                          RemoteRepository... repositories )
-        throws DependencyCollectionException;
+  /**
+   * Builds the dependency transitive hull.
+   * 
+   * @param request dependency tree request
+   * @param session session to be used while resolving
+   * @param repositories repositories to use while resolving
+   * @return resolved dependency tree
+   * @throws DependencyCollectionException If dependencies could nto be resolved
+   */
+  DependencyNode resolveDependencyTree(CollectRequest request, RepositorySystemSession session,
+      RemoteRepository... repositories) throws DependencyCollectionException;
 
 }

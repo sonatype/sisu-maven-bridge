@@ -17,25 +17,20 @@ import org.slf4j.LoggerFactory;
 public abstract class ComponentSupport
 {
 
-    private Logger log;
+  private Logger log;
 
-    protected Logger log()
-    {
-        if ( log == null )
-        {
-            log = LoggerFactory.getLogger( this.getClass() );
-        }
-        return log;
+  protected Logger log() {
+    if (log == null) {
+      log = LoggerFactory.getLogger(this.getClass());
     }
+    return log;
+  }
 
-    protected static <T> T assertNotNull( final T object,
-                                             final Object message )
-    {
-        if ( object == null )
-        {
-            throw new NullPointerException( message.toString() );
-        }
-        return object;
+  protected static <T> T assertNotNull(final T object, final Object message) {
+    if (object == null) {
+      throw new NullPointerException(message.toString());
     }
+    return object;
+  }
 
 }

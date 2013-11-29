@@ -11,44 +11,43 @@
  */
 package org.sonatype.sisu.maven.bridge.support.model;
 
+import javax.inject.Inject;
+
+import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
+import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
+import org.sonatype.sisu.maven.bridge.support.dependency.RemoteMavenDependencyTreeResolverUsingSettings;
+
+import com.google.inject.Binder;
+import org.junit.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
-import javax.inject.Inject;
-
-import org.junit.Test;
-import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
-import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
-import org.sonatype.sisu.maven.bridge.support.dependency.RemoteMavenDependencyTreeResolverUsingSettings;
-import com.google.inject.Binder;
-
 /**
  * {@link MavenDependencyTreeResolver} injection related UTs.
- *
+ * 
  * @since 2.2
  */
 public class MavenDependencyTreeResolverInjectionTest
     extends InjectedTestSupport
 {
 
-    @Inject
-    private MavenDependencyTreeResolver resolver;
+  @Inject
+  private MavenDependencyTreeResolver resolver;
 
-    @Override
-    public void configure( final Binder binder )
-    {
-        binder.bind( MavenDependencyTreeResolver.class ).to( RemoteMavenDependencyTreeResolverUsingSettings.class );
-    }
+  @Override
+  public void configure(final Binder binder) {
+    binder.bind(MavenDependencyTreeResolver.class).to(RemoteMavenDependencyTreeResolverUsingSettings.class);
+  }
 
-    /**
-     * Test that the explicit binding is injected.
-     */
+  /**
+   * Test that the explicit binding is injected.
+   */
 
-    @Test
-    public void boundedResolverIsInjected()
-    {
-        assertThat( resolver, is( instanceOf( RemoteMavenDependencyTreeResolverUsingSettings.class ) ) );
-    }
+  @Test
+  public void boundedResolverIsInjected() {
+    assertThat(resolver, is(instanceOf(RemoteMavenDependencyTreeResolverUsingSettings.class)));
+  }
 
 }

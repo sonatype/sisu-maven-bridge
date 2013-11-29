@@ -11,18 +11,13 @@
  */
 package org.sonatype.sisu.maven.bridge.support.dependency.internal;
 
-import static org.sonatype.sisu.maven.bridge.support.RemoteRepositoryBuilder.remoteRepository;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Provider;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Repository;
-import org.apache.maven.model.building.ModelBuildingException;
-import org.apache.maven.model.building.ModelBuildingRequest;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
@@ -46,164 +41,147 @@ import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.internal.ComponentSupport;
 import org.sonatype.sisu.maven.bridge.support.CollectRequestBuilder;
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Repository;
+import org.apache.maven.model.building.ModelBuildingException;
+import org.apache.maven.model.building.ModelBuildingRequest;
+
+import static org.sonatype.sisu.maven.bridge.support.RemoteRepositoryBuilder.remoteRepository;
+
 public abstract class MavenDependencyTreeResolverSupport
     extends ComponentSupport
     implements MavenDependencyTreeResolver
 {
 
-    protected static final Provider<RepositorySystemSession> NO_SESSION_PROVIDER = null;
+  protected static final Provider<RepositorySystemSession> NO_SESSION_PROVIDER = null;
 
-    private MavenModelResolver mavenModelResolver;
+  private MavenModelResolver mavenModelResolver;
 
-    private Provider<RepositorySystemSession> sessionProvider;
+  private Provider<RepositorySystemSession> sessionProvider;
 
-    private RepositorySystem repositorySystem;
+  private RepositorySystem repositorySystem;
 
-    private RemoteRepositoryManager remoteRepositoryManager;
+  private RemoteRepositoryManager remoteRepositoryManager;
 
-    protected MavenDependencyTreeResolverSupport( final ServiceLocator serviceLocator,
-                                                  final @Nullable MavenModelResolver mavenModelResolver )
-    {
-        this( serviceLocator, mavenModelResolver, NO_SESSION_PROVIDER );
+  protected MavenDependencyTreeResolverSupport(final ServiceLocator serviceLocator,
+      final @Nullable MavenModelResolver mavenModelResolver)
+  {
+    this(serviceLocator, mavenModelResolver, NO_SESSION_PROVIDER);
+  }
+
+  protected MavenDependencyTreeResolverSupport(final ServiceLocator serviceLocator,
+      final @Nullable MavenModelResolver mavenModelResolver,
+      final @Nullable Provider<RepositorySystemSession> sessionProvider)
+  {
+    repositorySystem = serviceLocator.getService(RepositorySystem.class);
+    remoteRepositoryManager = serviceLocator.getService(RemoteRepositoryManager.class);
+    this.sessionProvider = sessionProvider;
+    this.mavenModelResolver = mavenModelResolver;
+  }
+
+  @Override
+  public DependencyNode resolveDependencyTree(final CollectRequest request, final RepositorySystemSession session,
+      final RemoteRepository... repositories) throws DependencyCollectionException
+  {
+
+    if (request instanceof CollectRequestBuilder) {
+      final CollectRequestBuilder requestBuilder = (CollectRequestBuilder) request;
+      final ModelBuildingRequest modelBuildingRequest = requestBuilder.getModelBuildingRequest();
+      Model model = requestBuilder.getModel();
+      if (model == null && modelBuildingRequest != null) {
+        model = resolveModel(request, session, modelBuildingRequest);
+      }
+      if (model != null) {
+        injectCollectionRequest(request, session, model);
+      }
     }
 
-    protected MavenDependencyTreeResolverSupport( final ServiceLocator serviceLocator,
-                                                  final @Nullable MavenModelResolver mavenModelResolver,
-                                                  final @Nullable Provider<RepositorySystemSession> sessionProvider )
-    {
-        repositorySystem = serviceLocator.getService( RepositorySystem.class );
-        remoteRepositoryManager = serviceLocator.getService( RemoteRepositoryManager.class );
-        this.sessionProvider = sessionProvider;
-        this.mavenModelResolver = mavenModelResolver;
+    return repositorySystem.collectDependencies(session, request).getRoot();
+  }
+
+  @Override
+  public DependencyNode resolveDependencyTree(final CollectRequest request, final RemoteRepository... repositories)
+      throws DependencyCollectionException
+  {
+    return resolveDependencyTree(request,
+        assertNotNull(sessionProvider, "Repository system session provider not specified").get());
+  }
+
+  protected RemoteRepositoryManager getRemoteRepositoryManager() {
+    return remoteRepositoryManager;
+  }
+
+  protected RepositorySystem getRepositorySystem() {
+    return repositorySystem;
+  }
+
+  private void injectCollectionRequest(final CollectRequest request, final RepositorySystemSession session,
+      final Model model)
+  {
+    for (final Repository repository : model.getRepositories()) {
+      request.addRepository(remoteRepository(repository));
     }
+    final ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
+    for (final org.apache.maven.model.Dependency dep : model.getDependencies()) {
+      request.addDependency(toDependency(dep, stereotypes));
+    }
+    if (model.getDependencyManagement() != null) {
+      for (final org.apache.maven.model.Dependency dep : model.getDependencyManagement().getDependencies()) {
+        request.addManagedDependency(toDependency(dep, stereotypes));
+      }
+    }
+  }
 
-    @Override
-    public DependencyNode resolveDependencyTree( final CollectRequest request,
-                                                 final RepositorySystemSession session,
-                                                 final RemoteRepository... repositories )
-        throws DependencyCollectionException
-    {
-
-        if ( request instanceof CollectRequestBuilder )
-        {
-            final CollectRequestBuilder requestBuilder = (CollectRequestBuilder) request;
-            final ModelBuildingRequest modelBuildingRequest = requestBuilder.getModelBuildingRequest();
-            Model model = requestBuilder.getModel();
-            if ( model == null && modelBuildingRequest != null )
-            {
-                model = resolveModel( request, session, modelBuildingRequest );
-            }
-            if ( model != null )
-            {
-                injectCollectionRequest( request, session, model );
-            }
+  private Model resolveModel(final CollectRequest request, final RepositorySystemSession session,
+      final ModelBuildingRequest modelBuildingRequest) throws DependencyCollectionException
+  {
+    final Model model;
+    try {
+      model = assertNotNull(mavenModelResolver, "Maven model resolver is not set").resolveModel(modelBuildingRequest,
+          session);
+    }
+    catch (final ModelBuildingException e) {
+      final CollectResult collectResult = new CollectResult(request);
+      collectResult.addException(e);
+      throw new DependencyCollectionException(collectResult)
+      {
+        @Override
+        public String getMessage() {
+          return e.getMessage();
         }
+      };
+    }
+    return model;
+  }
 
-        return repositorySystem.collectDependencies( session, request ).getRoot();
+  private Dependency toDependency(final org.apache.maven.model.Dependency dependency,
+      final ArtifactTypeRegistry stereotypes)
+  {
+    ArtifactType stereotype = stereotypes.get(dependency.getType());
+    if (stereotype == null) {
+      stereotype = new DefaultArtifactType(dependency.getType());
     }
 
-    @Override
-    public DependencyNode resolveDependencyTree( final CollectRequest request,
-                                                 final RemoteRepository... repositories )
-        throws DependencyCollectionException
-    {
-        return resolveDependencyTree(
-            request,
-            assertNotNull( sessionProvider, "Repository system session provider not specified" ).get()
-        );
+    final boolean system = dependency.getSystemPath() != null && dependency.getSystemPath().length() > 0;
+
+    Map<String, String> props = null;
+    if (system) {
+      props = Collections.singletonMap(ArtifactProperties.LOCAL_PATH, dependency.getSystemPath());
     }
 
-    protected RemoteRepositoryManager getRemoteRepositoryManager()
-    {
-        return remoteRepositoryManager;
+    final Artifact artifact = new DefaultArtifact(dependency.getGroupId(), dependency.getArtifactId(),
+        dependency.getClassifier(), null, dependency.getVersion(), props, stereotype);
+
+    final List<Exclusion> exclusions = new ArrayList<Exclusion>(dependency.getExclusions().size());
+    for (final org.apache.maven.model.Exclusion exclusion : dependency.getExclusions()) {
+      exclusions.add(toExclusion(exclusion));
     }
 
-    protected RepositorySystem getRepositorySystem()
-    {
-        return repositorySystem;
-    }
+    return new Dependency(artifact, dependency.getScope(), dependency.isOptional(), exclusions);
+  }
 
-    private void injectCollectionRequest( final CollectRequest request,
-                                          final RepositorySystemSession session,
-                                          final Model model )
-    {
-        for ( final Repository repository : model.getRepositories() )
-        {
-            request.addRepository( remoteRepository( repository ) );
-        }
-        final ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
-        for ( final org.apache.maven.model.Dependency dep : model.getDependencies() )
-        {
-            request.addDependency( toDependency( dep, stereotypes ) );
-        }
-        if ( model.getDependencyManagement() != null )
-        {
-            for ( final org.apache.maven.model.Dependency dep : model.getDependencyManagement().getDependencies() )
-            {
-                request.addManagedDependency( toDependency( dep, stereotypes ) );
-            }
-        }
-    }
-
-    private Model resolveModel( final CollectRequest request,
-                                final RepositorySystemSession session,
-                                final ModelBuildingRequest modelBuildingRequest )
-        throws DependencyCollectionException
-    {
-        final Model model;
-        try
-        {
-            model = assertNotNull( mavenModelResolver, "Maven model resolver is not set" )
-                .resolveModel( modelBuildingRequest, session );
-        }
-        catch ( final ModelBuildingException e )
-        {
-            final CollectResult collectResult = new CollectResult( request );
-            collectResult.addException( e );
-            throw new DependencyCollectionException( collectResult ){
-                @Override
-                public String getMessage()
-                {
-                    return e.getMessage();
-                }
-            };
-        }
-        return model;
-    }
-
-    private Dependency toDependency( final org.apache.maven.model.Dependency dependency,
-                                     final ArtifactTypeRegistry stereotypes )
-    {
-        ArtifactType stereotype = stereotypes.get( dependency.getType() );
-        if ( stereotype == null )
-        {
-            stereotype = new DefaultArtifactType( dependency.getType() );
-        }
-
-        final boolean system = dependency.getSystemPath() != null && dependency.getSystemPath().length() > 0;
-
-        Map<String, String> props = null;
-        if ( system )
-        {
-            props = Collections.singletonMap( ArtifactProperties.LOCAL_PATH, dependency.getSystemPath() );
-        }
-
-        final Artifact artifact =
-            new DefaultArtifact( dependency.getGroupId(), dependency.getArtifactId(), dependency.getClassifier(), null,
-                                 dependency.getVersion(), props, stereotype );
-
-        final List<Exclusion> exclusions = new ArrayList<Exclusion>( dependency.getExclusions().size() );
-        for ( final org.apache.maven.model.Exclusion exclusion : dependency.getExclusions() )
-        {
-            exclusions.add( toExclusion( exclusion ) );
-        }
-
-        return new Dependency( artifact, dependency.getScope(), dependency.isOptional(), exclusions );
-    }
-
-    private Exclusion toExclusion( final org.apache.maven.model.Exclusion exclusion )
-    {
-        return new Exclusion( exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*" );
-    }
+  private Exclusion toExclusion(final org.apache.maven.model.Exclusion exclusion) {
+    return new Exclusion(exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*");
+  }
 
 }

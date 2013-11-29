@@ -15,17 +15,17 @@ import java.io.File;
 
 /**
  * Maven settings factory.
- *
+ * 
  * @author adreghiciu
  * @since 2.0
  */
 public interface MavenSettingsFactory
 {
 
-    MavenSettings create();
+  MavenSettings create();
 
-    MavenSettings create( File globalSettings );
+  MavenSettings create(File globalSettings);
 
-    MavenSettings create( File globalSettings, File userSettings );
+  MavenSettings create(File globalSettings, File userSettings);
 
 }

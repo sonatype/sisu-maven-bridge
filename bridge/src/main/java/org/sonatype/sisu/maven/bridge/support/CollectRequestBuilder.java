@@ -11,18 +11,15 @@
  */
 package org.sonatype.sisu.maven.bridge.support;
 
-import static org.sonatype.sisu.maven.bridge.support.RemoteRepositoryBuilder.remoteRepository;
-
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Repository;
-import org.apache.maven.model.building.ModelBuildingRequest;
-import org.sonatype.aether.artifact.ArtifactTypeRegistry;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.graph.Dependency;
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.building.ModelBuildingRequest;
+
 /**
  * TODO
- *
+ * 
  * @author adreghiciu
  * @since 2.0
  */
@@ -30,46 +27,39 @@ public class CollectRequestBuilder
     extends CollectRequest
 {
 
-    private ModelBuildingRequest request;
+  private ModelBuildingRequest request;
 
-    private Model model;
+  private Model model;
 
-    public CollectRequestBuilder()
-    {
-        setRequestContext( "project" );
-    }
+  public CollectRequestBuilder() {
+    setRequestContext("project");
+  }
 
-    public static CollectRequestBuilder tree()
-    {
-        return new CollectRequestBuilder();
-    }
+  public static CollectRequestBuilder tree() {
+    return new CollectRequestBuilder();
+  }
 
-    public CollectRequestBuilder dependency( final Dependency dependency )
-    {
-        setRoot( dependency );
-        return this;
-    }
+  public CollectRequestBuilder dependency(final Dependency dependency) {
+    setRoot(dependency);
+    return this;
+  }
 
-    public CollectRequestBuilder model( final Model model )
-    {
-        this.model = model;
-        return this;
-    }
+  public CollectRequestBuilder model(final Model model) {
+    this.model = model;
+    return this;
+  }
 
-    public CollectRequestBuilder model( final ModelBuildingRequest request )
-    {
-        this.request = request;
-        return this;
-    }
+  public CollectRequestBuilder model(final ModelBuildingRequest request) {
+    this.request = request;
+    return this;
+  }
 
-    public ModelBuildingRequest getModelBuildingRequest()
-    {
-        return request;
-    }
+  public ModelBuildingRequest getModelBuildingRequest() {
+    return request;
+  }
 
-    public Model getModel()
-    {
-        return model;
-    }
+  public Model getModel() {
+    return model;
+  }
 
 }

@@ -19,17 +19,16 @@ import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.LocalMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
-@Named( "local-model-resolver" )
+@Named("local-model-resolver")
 @Singleton
 public class LocalMavenModelResolver
     extends MavenModelResolverSupport
     implements MavenModelResolver
 {
 
-    @Inject
-    public LocalMavenModelResolver( final LocalMavenArtifactResolver artifactResolver )
-    {
-        super( artifactResolver );
-    }
+  @Inject
+  public LocalMavenModelResolver(final LocalMavenArtifactResolver artifactResolver) {
+    super(artifactResolver);
+  }
 
 }

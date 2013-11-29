@@ -22,23 +22,22 @@ import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
-@Named( "remote-model-resolver" )
+@Named("remote-model-resolver")
 @Singleton
 public class RemoteMavenModelResolver
     extends MavenModelResolverSupport
     implements MavenModelResolver
 {
 
-    public RemoteMavenModelResolver( final RemoteMavenArtifactResolver artifactResolver )
-    {
-        super( artifactResolver );
-    }
+  public RemoteMavenModelResolver(final RemoteMavenArtifactResolver artifactResolver) {
+    super(artifactResolver);
+  }
 
-    @Inject
-    public RemoteMavenModelResolver( final RemoteMavenArtifactResolver artifactResolver,
-                                     final @Nullable Provider<RepositorySystemSession> sessionProvider )
-    {
-        super( artifactResolver, sessionProvider );
-    }
+  @Inject
+  public RemoteMavenModelResolver(final RemoteMavenArtifactResolver artifactResolver,
+      final @Nullable Provider<RepositorySystemSession> sessionProvider)
+  {
+    super(artifactResolver, sessionProvider);
+  }
 
 }

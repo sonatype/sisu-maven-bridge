@@ -27,40 +27,35 @@ import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
 
-@Named( "remote-artifact-resolver-using-settings" )
+@Named("remote-artifact-resolver-using-settings")
 @Singleton
 public class RemoteMavenArtifactResolverUsingSettings
     extends RemoteMavenArtifactResolver
     implements MavenArtifactResolver
 {
 
-    private final MavenSettingsFactory mavenSettingsFactory;
+  private final MavenSettingsFactory mavenSettingsFactory;
 
-    public RemoteMavenArtifactResolverUsingSettings( final ServiceLocator serviceLocator,
-                                                     final MavenSettingsFactory mavenSettingsFactory )
-    {
-        this( serviceLocator, mavenSettingsFactory, NO_SESSION_PROVIDER );
-    }
+  public RemoteMavenArtifactResolverUsingSettings(final ServiceLocator serviceLocator,
+      final MavenSettingsFactory mavenSettingsFactory)
+  {
+    this(serviceLocator, mavenSettingsFactory, NO_SESSION_PROVIDER);
+  }
 
-    @Inject
-    public RemoteMavenArtifactResolverUsingSettings( final ServiceLocator serviceLocator,
-                                                     final MavenSettingsFactory mavenSettingsFactory,
-                                                     final @Nullable Provider<RepositorySystemSession> sessionProvider )
-    {
-        super( serviceLocator, sessionProvider );
-        this.mavenSettingsFactory = mavenSettingsFactory;
-    }
+  @Inject
+  public RemoteMavenArtifactResolverUsingSettings(final ServiceLocator serviceLocator,
+      final MavenSettingsFactory mavenSettingsFactory, final @Nullable Provider<RepositorySystemSession> sessionProvider)
+  {
+    super(serviceLocator, sessionProvider);
+    this.mavenSettingsFactory = mavenSettingsFactory;
+  }
 
-    @Override
-    protected Artifact doResolve( final ArtifactRequest artifactRequest,
-                                  final RepositorySystemSession session,
-                                  final RemoteRepository... repositories )
-        throws ArtifactResolutionException
-    {
-        final MavenSettings mavenSettings = mavenSettingsFactory.create();
-        return super.doResolve(
-            mavenSettings.inject( artifactRequest ), mavenSettings.inject( session ), repositories
-        );
-    }
+  @Override
+  protected Artifact doResolve(final ArtifactRequest artifactRequest, final RepositorySystemSession session,
+      final RemoteRepository... repositories) throws ArtifactResolutionException
+  {
+    final MavenSettings mavenSettings = mavenSettingsFactory.create();
+    return super.doResolve(mavenSettings.inject(artifactRequest), mavenSettings.inject(session), repositories);
+  }
 
 }

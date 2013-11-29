@@ -11,12 +11,11 @@
  */
 package org.sonatype.sisu.maven.bridge.support.dependency;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -37,70 +36,62 @@ import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.dependency.internal.MavenDependencyTreeResolverSupport;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolver;
 
-@Named( "remote-dependency-tree-resolver" )
+import static java.util.Arrays.asList;
+
+@Named("remote-dependency-tree-resolver")
 @Singleton
 public class RemoteMavenDependencyTreeResolver
     extends MavenDependencyTreeResolverSupport
     implements MavenDependencyTreeResolver
 {
 
-    private static final boolean RECESSIVE_IS_RAW = true;
+  private static final boolean RECESSIVE_IS_RAW = true;
 
-    public RemoteMavenDependencyTreeResolver( final ServiceLocator serviceLocator,
-                                              final @Nullable RemoteMavenModelResolver mavenModelResolver )
-    {
-        super( serviceLocator, mavenModelResolver );
+  public RemoteMavenDependencyTreeResolver(final ServiceLocator serviceLocator,
+      final @Nullable RemoteMavenModelResolver mavenModelResolver)
+  {
+    super(serviceLocator, mavenModelResolver);
+  }
+
+  @Inject
+  public RemoteMavenDependencyTreeResolver(final ServiceLocator serviceLocator,
+      final @Nullable RemoteMavenModelResolver mavenModelResolver,
+      final @Nullable Provider<RepositorySystemSession> sessionProvider)
+  {
+    super(serviceLocator, mavenModelResolver, sessionProvider);
+  }
+
+  @Override
+  public DependencyNode resolveDependencyTree(final CollectRequest request, final RepositorySystemSession session,
+      final RemoteRepository... repositories) throws DependencyCollectionException
+  {
+    final List<RemoteRepository> allRepositories = new ArrayList<RemoteRepository>();
+    if (repositories != null && repositories.length > 0) {
+      allRepositories.addAll(asList(repositories));
     }
+    allRepositories.addAll(request.getRepositories());
 
-    @Inject
-    public RemoteMavenDependencyTreeResolver( final ServiceLocator serviceLocator,
-                                              final @Nullable RemoteMavenModelResolver mavenModelResolver,
-                                              final @Nullable Provider<RepositorySystemSession> sessionProvider )
-    {
-        super( serviceLocator, mavenModelResolver, sessionProvider );
-    }
+    request.setRepositories(getRemoteRepositoryManager().aggregateRepositories(session,
+        Collections.<RemoteRepository> emptyList(), allRepositories, RECESSIVE_IS_RAW));
 
-    @Override
-    public DependencyNode resolveDependencyTree( final CollectRequest request,
-                                                 final RepositorySystemSession session,
-                                                 final RemoteRepository... repositories )
-        throws DependencyCollectionException
-    {
-        final List<RemoteRepository> allRepositories = new ArrayList<RemoteRepository>();
-        if ( repositories != null && repositories.length > 0 )
-        {
-            allRepositories.addAll( asList( repositories ) );
-        }
-        allRepositories.addAll( request.getRepositories() );
+    RepositorySystemSession safeSession = session;
+    if (session.getLocalRepositoryManager() == null || session.getLocalRepository() == null) {
+      safeSession = new RepositorySystemSessionWrapper(session)
+      {
+        final LocalRepositoryManager lrm = getRepositorySystem().newLocalRepositoryManager(
+            new LocalRepository(new File(Names.MAVEN_USER_HOME, "repository")));
 
-        request.setRepositories(
-            getRemoteRepositoryManager().aggregateRepositories(
-                session, Collections.<RemoteRepository>emptyList(), allRepositories, RECESSIVE_IS_RAW
-            )
-        );
-
-        RepositorySystemSession safeSession = session;
-        if ( session.getLocalRepositoryManager() == null || session.getLocalRepository() == null )
-        {
-            safeSession = new RepositorySystemSessionWrapper( session )
-            {
-                final LocalRepositoryManager lrm = getRepositorySystem().newLocalRepositoryManager(
-                    new LocalRepository( new File( Names.MAVEN_USER_HOME, "repository" ) )
-                );
-
-                public LocalRepositoryManager getLocalRepositoryManager()
-                {
-                    return lrm;
-                }
-
-                public LocalRepository getLocalRepository()
-                {
-                    return lrm.getRepository();
-                }
-            };
+        public LocalRepositoryManager getLocalRepositoryManager() {
+          return lrm;
         }
 
-        return super.resolveDependencyTree( request, safeSession, repositories );
+        public LocalRepository getLocalRepository() {
+          return lrm.getRepository();
+        }
+      };
     }
+
+    return super.resolveDependencyTree(request, safeSession, repositories);
+  }
 
 }

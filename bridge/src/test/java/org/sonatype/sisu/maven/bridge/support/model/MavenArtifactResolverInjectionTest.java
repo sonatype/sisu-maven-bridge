@@ -11,47 +11,42 @@
  */
 package org.sonatype.sisu.maven.bridge.support.model;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.sonatype.sisu.maven.bridge.support.ArtifactRequestBuilder.request;
-
 import javax.inject.Inject;
 
-import org.junit.Test;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolverUsingSettings;
+
 import com.google.inject.Binder;
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 
 /**
  * {@link MavenArtifactResolver} injection related UTs.
- *
+ * 
  * @since 2.2
  */
 public class MavenArtifactResolverInjectionTest
     extends InjectedTestSupport
 {
 
-    @Inject
-    private MavenArtifactResolver resolver;
+  @Inject
+  private MavenArtifactResolver resolver;
 
-    @Override
-    public void configure( final Binder binder )
-    {
-        binder.bind( MavenArtifactResolver.class ).to( RemoteMavenArtifactResolverUsingSettings.class );
-    }
+  @Override
+  public void configure(final Binder binder) {
+    binder.bind(MavenArtifactResolver.class).to(RemoteMavenArtifactResolverUsingSettings.class);
+  }
 
-    /**
-     * Test that the explicit binding is injected.
-     */
-    @Test
-    public void boundedResolverIsInjected()
-    {
-        assertThat( resolver, is( instanceOf( RemoteMavenArtifactResolverUsingSettings.class ) ) );
-    }
+  /**
+   * Test that the explicit binding is injected.
+   */
+  @Test
+  public void boundedResolverIsInjected() {
+    assertThat(resolver, is(instanceOf(RemoteMavenArtifactResolverUsingSettings.class)));
+  }
 
 }

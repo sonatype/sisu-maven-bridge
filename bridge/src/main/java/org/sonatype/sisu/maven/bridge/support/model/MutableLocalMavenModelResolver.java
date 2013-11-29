@@ -12,6 +12,7 @@
 package org.sonatype.sisu.maven.bridge.support.model;
 
 import java.io.File;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -20,22 +21,20 @@ import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.MutableLocalMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
 
-@Named( "mutable-local-model-resolver" )
+@Named("mutable-local-model-resolver")
 @Singleton
 public class MutableLocalMavenModelResolver
     extends MavenModelResolverSupport
     implements MavenModelResolver
 {
 
-    @Inject
-    public MutableLocalMavenModelResolver( final MutableLocalMavenArtifactResolver artifactResolver )
-    {
-        super( artifactResolver );
-    }
+  @Inject
+  public MutableLocalMavenModelResolver(final MutableLocalMavenArtifactResolver artifactResolver) {
+    super(artifactResolver);
+  }
 
-    public void setBaseDir( final File basedir )
-    {
-        ( (MutableLocalMavenArtifactResolver) getArtifactResolver() ).setBaseDir( basedir );
-    }
+  public void setBaseDir(final File basedir) {
+    ((MutableLocalMavenArtifactResolver) getArtifactResolver()).setBaseDir(basedir);
+  }
 
 }

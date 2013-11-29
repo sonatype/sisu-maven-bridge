@@ -11,6 +11,16 @@
  */
 package org.sonatype.sisu.maven.bridge.support.model;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
+import org.sonatype.sisu.maven.bridge.MavenModelResolver;
+
+import org.apache.maven.model.Model;
+import org.apache.maven.model.building.ModelBuildingException;
+import org.junit.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -18,43 +28,32 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.sonatype.sisu.maven.bridge.support.ModelBuildingRequestBuilder.model;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.apache.maven.model.Model;
-import org.apache.maven.model.building.ModelBuildingException;
-import org.junit.Test;
-import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
-import org.sonatype.sisu.maven.bridge.MavenModelResolver;
-
 /**
  * {@link RemoteMavenModelResolverUsingSettings} related UTs.
- *
+ * 
  * @since 2.0
  */
 public class RemoteMavenModelResolverUsingSettingsTest
     extends InjectedTestSupport
 {
 
-    @Inject
-    @Named( "remote-model-resolver-using-settings" )
-    private MavenModelResolver resolver;
+  @Inject
+  @Named("remote-model-resolver-using-settings")
+  private MavenModelResolver resolver;
 
-    /**
-     * Test that resolver will resolve the effective model.
-     *
-     * @throws ModelBuildingException - Unexpected
-     */
-    @Test
-    public void resolve()
-        throws ModelBuildingException
-    {
-        assertThat( resolver, is( instanceOf( RemoteMavenModelResolverUsingSettings.class ) ) );
-        final Model model = resolver.resolveModel( model().pom( "org.sonatype.aether:aether-api:1.9" ) );
-        assertThat( model, is( notNullValue() ) );
-        // if the following passes means that the parent was resolved and effective model was build
-        // as inception year is set in aether-parent
-        assertThat( model.getInceptionYear(), is( equalTo( "2010" ) ) );
-    }
+  /**
+   * Test that resolver will resolve the effective model.
+   * 
+   * @throws ModelBuildingException - Unexpected
+   */
+  @Test
+  public void resolve() throws ModelBuildingException {
+    assertThat(resolver, is(instanceOf(RemoteMavenModelResolverUsingSettings.class)));
+    final Model model = resolver.resolveModel(model().pom("org.sonatype.aether:aether-api:1.9"));
+    assertThat(model, is(notNullValue()));
+    // if the following passes means that the parent was resolved and effective model was build
+    // as inception year is set in aether-parent
+    assertThat(model.getInceptionYear(), is(equalTo("2010")));
+  }
 
 }

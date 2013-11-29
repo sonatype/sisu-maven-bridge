@@ -11,43 +11,38 @@
  */
 package org.sonatype.sisu.maven.bridge.internal;
 
+import org.sonatype.aether.connector.wagon.WagonProvider;
+
+import com.google.common.base.Throwables;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.http.HttpWagon;
-import org.sonatype.aether.connector.wagon.WagonProvider;
-import com.google.common.base.Throwables;
 
 /**
  * Simple http/https wagon provider using wagon-http.
- *
+ * 
  * @since 1.0
  */
 public class HttpWagonProvider
     implements WagonProvider
 {
 
-    @Override
-    public Wagon lookup( final String roleHint )
-        throws Exception
-    {
-        if ( "http".equals( roleHint ) || "https".equals( roleHint ) )
-        {
-            return new HttpWagon();
-        }
-        return null;
+  @Override
+  public Wagon lookup(final String roleHint) throws Exception {
+    if ("http".equals(roleHint) || "https".equals(roleHint)) {
+      return new HttpWagon();
     }
+    return null;
+  }
 
-    @Override
-    public void release( final Wagon wagon )
-    {
-        try
-        {
-            wagon.disconnect();
-        }
-        catch ( ConnectionException e )
-        {
-            throw Throwables.propagate( e );
-        }
+  @Override
+  public void release(final Wagon wagon) {
+    try {
+      wagon.disconnect();
     }
+    catch (ConnectionException e) {
+      throw Throwables.propagate(e);
+    }
+  }
 
 }

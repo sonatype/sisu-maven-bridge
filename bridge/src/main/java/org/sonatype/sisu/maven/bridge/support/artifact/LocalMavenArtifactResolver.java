@@ -11,9 +11,8 @@
  */
 package org.sonatype.sisu.maven.bridge.support.artifact;
 
-import static org.sonatype.sisu.maven.bridge.Names.LOCAL_ARTIFACT_RESOLVER_ROOT_DIR;
-
 import java.io.File;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -21,25 +20,25 @@ import javax.inject.Singleton;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.internal.LocalMavenArtifactResolverSupport;
 
-@Named( "local-artifact-resolver" )
+import static org.sonatype.sisu.maven.bridge.Names.LOCAL_ARTIFACT_RESOLVER_ROOT_DIR;
+
+@Named("local-artifact-resolver")
 @Singleton
 public class LocalMavenArtifactResolver
     extends LocalMavenArtifactResolverSupport
     implements MavenArtifactResolver
 {
 
-    private final File basedir;
+  private final File basedir;
 
-    @Inject
-    public LocalMavenArtifactResolver( final @Named( LOCAL_ARTIFACT_RESOLVER_ROOT_DIR ) File basedir )
-    {
-        this.basedir = assertNotNull( basedir, "Repository base directory not specified" );
-    }
+  @Inject
+  public LocalMavenArtifactResolver(final @Named(LOCAL_ARTIFACT_RESOLVER_ROOT_DIR) File basedir) {
+    this.basedir = assertNotNull(basedir, "Repository base directory not specified");
+  }
 
-    @Override
-    protected File getBaseDir()
-    {
-        return basedir;
-    }
+  @Override
+  protected File getBaseDir() {
+    return basedir;
+  }
 
 }

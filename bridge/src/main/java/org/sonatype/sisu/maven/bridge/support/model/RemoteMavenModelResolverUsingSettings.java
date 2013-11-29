@@ -21,23 +21,22 @@ import org.sonatype.inject.Nullable;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolverUsingSettings;
 
-@Named( "remote-model-resolver-using-settings" )
+@Named("remote-model-resolver-using-settings")
 @Singleton
 public class RemoteMavenModelResolverUsingSettings
     extends RemoteMavenModelResolver
     implements MavenModelResolver
 {
 
-    public RemoteMavenModelResolverUsingSettings( final RemoteMavenArtifactResolverUsingSettings artifactResolver )
-    {
-        super( artifactResolver );
-    }
+  public RemoteMavenModelResolverUsingSettings(final RemoteMavenArtifactResolverUsingSettings artifactResolver) {
+    super(artifactResolver);
+  }
 
-    @Inject
-    public RemoteMavenModelResolverUsingSettings( final RemoteMavenArtifactResolverUsingSettings artifactResolver,
-                                                  final @Nullable Provider<RepositorySystemSession> sessionProvider )
-    {
-        super( artifactResolver, sessionProvider );
-    }
+  @Inject
+  public RemoteMavenModelResolverUsingSettings(final RemoteMavenArtifactResolverUsingSettings artifactResolver,
+      final @Nullable Provider<RepositorySystemSession> sessionProvider)
+  {
+    super(artifactResolver, sessionProvider);
+  }
 
 }
