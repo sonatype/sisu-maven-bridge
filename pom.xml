@@ -12,7 +12,8 @@
     You may elect to redistribute this code under either of these licenses.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -24,9 +25,10 @@
 
   <groupId>org.sonatype.sisu</groupId>
   <artifactId>sisu-maven-bridge-parent</artifactId>
+  <name>${project.groupId}:${project.artifactId}</name>
   <packaging>pom</packaging>
+
   <version>3.1.1-SNAPSHOT</version>
-  <name>${project.artifactId}</name>
 
   <inceptionYear>2011</inceptionYear>
   <url>https://github.com/sonatype/sisu-maven-bridge</url>
@@ -43,20 +45,17 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-    
+
   <scm>
     <connection>scm:git:git@github.com/sonatype/sisu-maven-bridge.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/sonatype/sisu-maven-bridge.git</developerConnection>
     <url>http://github.com/sonatype/sisu-maven-bridge</url>
   </scm>
 
-  <ciManagement>
-    <system>Hudson</system>
-    <url>https://builds.sonatype.org/job/sisu-maven-bridge</url>
-  </ciManagement>
-
   <properties>
     <maven.version>3.0.4</maven.version>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
   </properties>
 
   <modules>
@@ -71,9 +70,22 @@
         <artifactId>sisu-guice</artifactId>
         <version>3.1.8</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.inject</artifactId>
+        <version>0.1.1</version>
+      </dependency>
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
         <version>1.6.1</version>
       </dependency>
 
@@ -82,26 +94,29 @@
         <artifactId>maven-plugin-api</artifactId>
         <version>${maven.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
         <version>${maven.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model-builder</artifactId>
         <version>${maven.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-settings-builder</artifactId>
         <version>${maven.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
         <version>${maven.version}</version>
-        <scope>provided</scope>
         <exclusions>
           <exclusion>
             <groupId>org.apache.maven.wagon</groupId>
@@ -125,31 +140,37 @@
           </exclusion>
         </exclusions>
       </dependency>
+
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-aether-provider</artifactId>
         <version>${maven.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-api</artifactId>
         <version>1.13.1</version>
       </dependency>
+
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-spi</artifactId>
         <version>1.13.1</version>
       </dependency>
+
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-util</artifactId>
         <version>1.13.1</version>
       </dependency>
+
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-impl</artifactId>
         <version>1.13.1</version>
       </dependency>
+
       <dependency>
         <groupId>org.sonatype.aether</groupId>
         <artifactId>aether-connector-wagon</artifactId>
@@ -178,35 +199,22 @@
         </exclusions>
       </dependency>
 
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http-shared4</artifactId>
-        <version>2.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+      <!--<dependency>-->
+      <!--<groupId>org.apache.maven.wagon</groupId>-->
+      <!--<artifactId>wagon-http-shared4</artifactId>-->
+      <!--<version>2.4</version>-->
+      <!--<exclusions>-->
+      <!--<exclusion>-->
+      <!--<groupId>commons-logging</groupId>-->
+      <!--<artifactId>commons-logging</artifactId>-->
+      <!--</exclusion>-->
+      <!--</exclusions>-->
+      <!--</dependency>-->
 
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.6.1</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.inject</artifactId>
-        <version>0.1.1</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>org.sonatype.sisu.litmus</groupId>
         <artifactId>litmus-testsupport</artifactId>
         <version>1.8</version>
-        <scope>test</scope>
         <exclusions>
           <exclusion>
             <groupId>com.googlecode.junit-ext</groupId>
@@ -219,84 +227,15 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>1.0.0</version>
-        <scope>test</scope>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
   <build>
     <defaultGoal>install</defaultGoal>
 
-    <resources>
-      <resource>
-        <directory>${project.basedir}/src/main/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
-
-      <resource>
-        <directory>${project.basedir}/src/main/filtered-resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
-    </resources>
-
-    <testResources>
-      <testResource>
-        <directory>${project.basedir}/src/test/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </testResource>
-
-      <testResource>
-        <directory>${project.basedir}/src/test/filtered-resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </testResource>
-    </testResources>
-
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>sisu-maven-plugin</artifactId>
-                    <versionRange>[1.1,)</versionRange>
-                    <goals>
-                      <goal>test-index</goal>
-                      <goal>main-index</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.sonatype.plugins</groupId>
-          <artifactId>sisu-maven-bridge-maven-plugin</artifactId>
-          <version>3.1.1-SNAPSHOT</version>
-        </plugin>
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
@@ -314,6 +253,7 @@
             </instructions>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
@@ -321,11 +261,18 @@
             <tagNameFormat>sisu-maven-bridge-@{version}</tagNameFormat>
           </configuration>
         </plugin>
+
+        <!-- INTERNAL -->
+
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>sisu-maven-bridge-maven-plugin</artifactId>
+          <version>3.1.1-SNAPSHOT</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -361,23 +308,49 @@
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-            <configuration>
-              <includePom>true</includePom>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>m2e</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>sisu-maven-plugin</artifactId>
+                        <versionRange>[1.1,)</versionRange>
+                        <goals>
+                          <goal>test-index</goal>
+                          <goal>main-index</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore/>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
