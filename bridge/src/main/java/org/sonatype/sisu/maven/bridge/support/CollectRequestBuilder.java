@@ -11,11 +11,10 @@
  */
 package org.sonatype.sisu.maven.bridge.support;
 
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.graph.Dependency;
-
 import org.apache.maven.model.Model;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.graph.Dependency;
 
 /**
  * TODO
@@ -24,15 +23,15 @@ import org.apache.maven.model.building.ModelBuildingRequest;
  * @since 2.0
  */
 public class CollectRequestBuilder
-    extends CollectRequest
 {
+  private CollectRequest collectRequest = new CollectRequest();
 
-  private ModelBuildingRequest request;
+  private ModelBuildingRequest modelRequest;
 
   private Model model;
 
   public CollectRequestBuilder() {
-    setRequestContext("project");
+    collectRequest.setRequestContext("project");
   }
 
   public static CollectRequestBuilder tree() {
@@ -40,7 +39,7 @@ public class CollectRequestBuilder
   }
 
   public CollectRequestBuilder dependency(final Dependency dependency) {
-    setRoot(dependency);
+    collectRequest.setRoot(dependency);
     return this;
   }
 
@@ -50,16 +49,20 @@ public class CollectRequestBuilder
   }
 
   public CollectRequestBuilder model(final ModelBuildingRequest request) {
-    this.request = request;
+    this.modelRequest = request;
     return this;
   }
 
   public ModelBuildingRequest getModelBuildingRequest() {
-    return request;
+    return modelRequest;
   }
 
   public Model getModel() {
     return model;
+  }
+
+  public CollectRequest getCollectRequest() {
+    return collectRequest;
   }
 
 }

@@ -22,20 +22,21 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.impl.RemoteRepositoryManager;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.LocalRepositoryManager;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.Names;
 import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.artifact.internal.MavenArtifactResolverSupport;
+
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.impl.RemoteRepositoryManager;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.spi.locator.ServiceLocator;
 
 import static java.util.Arrays.asList;
 
@@ -83,8 +84,8 @@ public class RemoteMavenArtifactResolver
     if (session.getLocalRepositoryManager() == null || session.getLocalRepository() == null) {
       safeSession = new RepositorySystemSessionWrapper(session)
       {
-        final LocalRepositoryManager lrm = repositorySystem.newLocalRepositoryManager(new LocalRepository(new File(
-            Names.MAVEN_USER_HOME, "repository")));
+        final LocalRepositoryManager lrm = repositorySystem.newLocalRepositoryManager(session, new LocalRepository(
+            new File(Names.MAVEN_USER_HOME, "repository")));
 
         public LocalRepositoryManager getLocalRepositoryManager() {
           return lrm;

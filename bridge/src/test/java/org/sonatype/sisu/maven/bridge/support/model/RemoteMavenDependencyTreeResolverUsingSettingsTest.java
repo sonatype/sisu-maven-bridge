@@ -14,11 +14,11 @@ package org.sonatype.sisu.maven.bridge.support.model;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
 import org.sonatype.sisu.maven.bridge.support.dependency.RemoteMavenDependencyTreeResolverUsingSettings;
 
+import org.eclipse.aether.graph.DependencyNode;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

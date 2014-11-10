@@ -13,10 +13,9 @@ package org.sonatype.sisu.maven.bridge.support;
 
 import java.util.Collection;
 
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.repository.RepositoryPolicy;
-
 import org.apache.maven.model.Repository;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
 
 /**
  * TODO
@@ -39,26 +38,21 @@ public class RemoteRepositoryBuilder
   }
 
   public static RemoteRepository remoteRepository(final String id, final String type, final String url) {
-    final RemoteRepository repository = new RemoteRepository(id, type, url);
-    repository.setPolicy(false, new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_DAILY,
-        RepositoryPolicy.CHECKSUM_POLICY_WARN));
-    return repository;
+    return new RemoteRepository.Builder(id, type, url).setReleasePolicy(
+        new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_DAILY, RepositoryPolicy.CHECKSUM_POLICY_WARN))
+        .build();
   }
 
   public static RemoteRepository remoteRepository(final Repository repository) {
-    final RemoteRepository remoteRepository = new RemoteRepository(repository.getId(), repository.getLayout(),
-        repository.getUrl());
-    remoteRepository.setPolicy(true, convert(repository.getSnapshots()));
-    remoteRepository.setPolicy(false, convert(repository.getReleases()));
-    return remoteRepository;
+    return new RemoteRepository.Builder(repository.getId(), repository.getLayout(), repository.getUrl())
+        .setSnapshotPolicy(convert(repository.getSnapshots())).setReleasePolicy(convert(repository.getReleases()))
+        .build();
   }
 
   public static RemoteRepository remoteRepository(final org.apache.maven.settings.Repository repository) {
-    final RemoteRepository remoteRepository = new RemoteRepository(repository.getId(), repository.getLayout(),
-        repository.getUrl());
-    remoteRepository.setPolicy(true, convert(repository.getSnapshots()));
-    remoteRepository.setPolicy(false, convert(repository.getReleases()));
-    return remoteRepository;
+    return new RemoteRepository.Builder(repository.getId(), repository.getLayout(), repository.getUrl())
+        .setSnapshotPolicy(convert(repository.getSnapshots())).setReleasePolicy(convert(repository.getReleases()))
+        .build();
   }
 
   private static RepositoryPolicy convert(final org.apache.maven.model.RepositoryPolicy policy) {

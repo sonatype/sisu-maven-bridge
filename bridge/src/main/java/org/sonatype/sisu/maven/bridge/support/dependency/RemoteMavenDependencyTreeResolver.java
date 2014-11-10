@@ -22,19 +22,21 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.LocalRepositoryManager;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
 import org.sonatype.sisu.maven.bridge.Names;
 import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
+import org.sonatype.sisu.maven.bridge.support.CollectRequestBuilder;
 import org.sonatype.sisu.maven.bridge.support.dependency.internal.MavenDependencyTreeResolverSupport;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolver;
+
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.spi.locator.ServiceLocator;
 
 import static java.util.Arrays.asList;
 
@@ -62,9 +64,12 @@ public class RemoteMavenDependencyTreeResolver
   }
 
   @Override
-  public DependencyNode resolveDependencyTree(final CollectRequest request, final RepositorySystemSession session,
-      final RemoteRepository... repositories) throws DependencyCollectionException
+  public DependencyNode resolveDependencyTree(final CollectRequestBuilder requestBuilder,
+      final RepositorySystemSession session, final RemoteRepository... repositories)
+      throws DependencyCollectionException
   {
+    final CollectRequest request = requestBuilder.getCollectRequest();
+
     final List<RemoteRepository> allRepositories = new ArrayList<RemoteRepository>();
     if (repositories != null && repositories.length > 0) {
       allRepositories.addAll(asList(repositories));
@@ -78,7 +83,7 @@ public class RemoteMavenDependencyTreeResolver
     if (session.getLocalRepositoryManager() == null || session.getLocalRepository() == null) {
       safeSession = new RepositorySystemSessionWrapper(session)
       {
-        final LocalRepositoryManager lrm = getRepositorySystem().newLocalRepositoryManager(
+        final LocalRepositoryManager lrm = getRepositorySystem().newLocalRepositoryManager(session,
             new LocalRepository(new File(Names.MAVEN_USER_HOME, "repository")));
 
         public LocalRepositoryManager getLocalRepositoryManager() {
@@ -91,7 +96,7 @@ public class RemoteMavenDependencyTreeResolver
       };
     }
 
-    return super.resolveDependencyTree(request, safeSession, repositories);
+    return super.resolveDependencyTree(requestBuilder, safeSession, repositories);
   }
 
 }

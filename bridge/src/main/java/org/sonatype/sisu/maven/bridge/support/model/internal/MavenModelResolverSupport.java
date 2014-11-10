@@ -19,16 +19,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.internal.ComponentSupport;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.DefaultModelBuilder;
 import org.apache.maven.model.building.DefaultModelBuilderFactory;
@@ -40,6 +36,11 @@ import org.apache.maven.model.building.ModelSource;
 import org.apache.maven.model.resolution.InvalidRepositoryException;
 import org.apache.maven.model.resolution.ModelResolver;
 import org.apache.maven.model.resolution.UnresolvableModelException;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
 
 import static java.util.Arrays.asList;
 import static org.sonatype.sisu.maven.bridge.support.ArtifactRequestBuilder.request;
@@ -179,7 +180,25 @@ public abstract class MavenModelResolverSupport
     }
 
     @Override
+    public ModelSource resolveModel(final Parent parent) throws UnresolvableModelException {
+      return resolveModel(parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
+    }
+
+    @Override
     public void addRepository(final Repository repository) throws InvalidRepositoryException {
+      allRepositories.add(remoteRepository(repository));
+    }
+
+    @Override
+    public void addRepository(final Repository repository, final boolean replace) throws InvalidRepositoryException {
+      if (replace) {
+        for (int i = 0; i < allRepositories.size(); i++) {
+          if (allRepositories.get(i).getId().equals(repository.getId())) {
+            allRepositories.set(i, remoteRepository(repository));
+            return;
+          }
+        }
+      }
       allRepositories.add(remoteRepository(repository));
     }
 

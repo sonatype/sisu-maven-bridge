@@ -11,11 +11,12 @@
  */
 package org.sonatype.sisu.maven.bridge;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.sisu.maven.bridge.support.CollectRequestBuilder;
+
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * Resolves maven dependency trees.
@@ -28,24 +29,24 @@ public interface MavenDependencyTreeResolver
   /**
    * Builds the dependency transitive hull.
    * 
-   * @param request dependency tree request
+   * @param requestBuilder dependency tree request builder
    * @param repositories repositories to use while resolving
    * @return resolved dependency tree
    * @throws DependencyCollectionException If dependencies could nto be resolved
    */
-  DependencyNode resolveDependencyTree(CollectRequest request, RemoteRepository... repositories)
+  DependencyNode resolveDependencyTree(CollectRequestBuilder requestBuilder, RemoteRepository... repositories)
       throws DependencyCollectionException;
 
   /**
    * Builds the dependency transitive hull.
    * 
-   * @param request dependency tree request
+   * @param requestBuilder dependency tree request builder
    * @param session session to be used while resolving
    * @param repositories repositories to use while resolving
    * @return resolved dependency tree
    * @throws DependencyCollectionException If dependencies could nto be resolved
    */
-  DependencyNode resolveDependencyTree(CollectRequest request, RepositorySystemSession session,
+  DependencyNode resolveDependencyTree(CollectRequestBuilder requestBuilder, RepositorySystemSession session,
       RemoteRepository... repositories) throws DependencyCollectionException;
 
 }

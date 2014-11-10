@@ -11,9 +11,9 @@
  */
 package org.sonatype.sisu.maven.bridge.support;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.resolution.ArtifactRequest;
 
 /**
  * Maven settings.

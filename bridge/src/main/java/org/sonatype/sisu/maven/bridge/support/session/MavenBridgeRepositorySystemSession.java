@@ -17,17 +17,18 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.aether.AbstractRepositoryListener;
-import org.sonatype.aether.RepositoryEvent;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.spi.locator.ServiceLocator;
-import org.sonatype.aether.transfer.AbstractTransferListener;
-import org.sonatype.aether.transfer.TransferCancelledException;
-import org.sonatype.aether.transfer.TransferEvent;
-
-import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.AbstractForwardingRepositorySystemSession;
+import org.eclipse.aether.AbstractRepositoryListener;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositoryEvent;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.spi.locator.ServiceLocator;
+import org.eclipse.aether.transfer.AbstractTransferListener;
+import org.eclipse.aether.transfer.TransferCancelledException;
+import org.eclipse.aether.transfer.TransferEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ import static org.sonatype.sisu.maven.bridge.Names.UPDATE_POLICY;
  */
 @Named
 public class MavenBridgeRepositorySystemSession
-    extends MavenRepositorySystemSession
+    extends AbstractForwardingRepositorySystemSession
     implements RepositorySystemSession
 {
 
@@ -53,10 +54,12 @@ public class MavenBridgeRepositorySystemSession
 
   private final RepositorySystem repositorySystem;
 
+  private final DefaultRepositorySystemSession delegate = MavenRepositorySystemUtils.newSession();
+
   @Inject
   public MavenBridgeRepositorySystemSession(final ServiceLocator serviceLocator) {
     this.repositorySystem = serviceLocator.getService(RepositorySystem.class);
-    setRepositoryListener(new AbstractRepositoryListener()
+    delegate.setRepositoryListener(new AbstractRepositoryListener()
     {
       @Override
       public void artifactInstalling(final RepositoryEvent event) {
@@ -88,7 +91,7 @@ public class MavenBridgeRepositorySystemSession
         log().warn("The POM for " + event.getArtifact() + " is missing, no dependency information available");
       }
     });
-    setTransferListener(new AbstractTransferListener()
+    delegate.setTransferListener(new AbstractTransferListener()
     {
       private ThreadLocal<Long> last = new ThreadLocal<Long>();
 
@@ -139,26 +142,28 @@ public class MavenBridgeRepositorySystemSession
       final @Nullable @Named("${" + LOCAL_REPOSITORY_DIR_MAVEN + "}") File localRepositoryMaven)
   {
     if (localRepository != null) {
-      setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(new LocalRepository(localRepository)));
+      delegate.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(this, new LocalRepository(
+          localRepository)));
     }
     else if (localRepositoryMaven != null) {
-      setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(new LocalRepository(localRepositoryMaven)));
+      delegate.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(this, new LocalRepository(
+          localRepositoryMaven)));
     }
   }
 
   @Inject
   void injectUpdatePolicy(final @Named("${" + UPDATE_POLICY + ":-daily}") String updatePolicy) {
-    super.setUpdatePolicy(updatePolicy);
+    delegate.setUpdatePolicy(updatePolicy);
   }
 
   @Inject
   void injectChecksumPolicy(final @Named("${" + CHECKSUM_POLICY + ":-warn}") String checksumPolicy) {
-    super.setChecksumPolicy(checksumPolicy);
+    delegate.setChecksumPolicy(checksumPolicy);
   }
 
   @Inject
   void injectOffline(final @Named("${" + OFFLINE + ":-false}") Boolean offline) {
-    super.setOffline(offline);
+    delegate.setOffline(offline);
   }
 
   protected Logger log() {
@@ -166,6 +171,11 @@ public class MavenBridgeRepositorySystemSession
       log = LoggerFactory.getLogger(this.getClass());
     }
     return log;
+  }
+
+  @Override
+  protected RepositorySystemSession getSession() {
+    return delegate;
   }
 
 }

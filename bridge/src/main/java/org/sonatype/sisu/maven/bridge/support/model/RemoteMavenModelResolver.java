@@ -17,10 +17,11 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport;
+
+import org.eclipse.aether.RepositorySystemSession;
 
 @Named("remote-model-resolver")
 @Singleton

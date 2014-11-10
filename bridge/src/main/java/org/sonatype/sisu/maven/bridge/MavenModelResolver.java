@@ -11,12 +11,11 @@
  */
 package org.sonatype.sisu.maven.bridge;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.RemoteRepository;
-
 import org.apache.maven.model.Model;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * Resolves Maven models.

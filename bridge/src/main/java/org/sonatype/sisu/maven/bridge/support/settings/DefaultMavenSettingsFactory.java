@@ -18,13 +18,13 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
 
 import com.google.common.collect.Lists;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.spi.locator.ServiceLocator;
 
 import static org.sonatype.sisu.maven.bridge.Names.DEFAULT_GLOBAL_SETTINGS_FILE;
 import static org.sonatype.sisu.maven.bridge.Names.DEFAULT_USER_SETTINGS_FILE;
@@ -109,7 +109,7 @@ public class DefaultMavenSettingsFactory
         if (parts.length != 3) {
           throw new IllegalArgumentException("Expected '<id>::<layout>::<url>' but got '" + segment + "'");
         }
-        remoteRepositories.add(new RemoteRepository(parts[0], parts[1], parts[2]));
+        remoteRepositories.add(new RemoteRepository.Builder(parts[0], parts[1], parts[2]).build());
       }
     }
     return remoteRepositories;

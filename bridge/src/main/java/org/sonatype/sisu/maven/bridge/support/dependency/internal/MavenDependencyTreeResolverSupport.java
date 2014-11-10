@@ -19,23 +19,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
 
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.artifact.ArtifactType;
-import org.sonatype.aether.artifact.ArtifactTypeRegistry;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.CollectResult;
-import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.graph.Exclusion;
-import org.sonatype.aether.impl.RemoteRepositoryManager;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.spi.locator.ServiceLocator;
-import org.sonatype.aether.util.artifact.ArtifactProperties;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.artifact.DefaultArtifactType;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
 import org.sonatype.sisu.maven.bridge.MavenModelResolver;
 import org.sonatype.sisu.maven.bridge.internal.ComponentSupport;
@@ -45,6 +28,23 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.ArtifactProperties;
+import org.eclipse.aether.artifact.ArtifactType;
+import org.eclipse.aether.artifact.ArtifactTypeRegistry;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.artifact.DefaultArtifactType;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.collection.CollectResult;
+import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.Exclusion;
+import org.eclipse.aether.impl.RemoteRepositoryManager;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.spi.locator.ServiceLocator;
 
 import static org.sonatype.sisu.maven.bridge.support.RemoteRepositoryBuilder.remoteRepository;
 
@@ -80,28 +80,27 @@ public abstract class MavenDependencyTreeResolverSupport
   }
 
   @Override
-  public DependencyNode resolveDependencyTree(final CollectRequest request, final RepositorySystemSession session,
-      final RemoteRepository... repositories) throws DependencyCollectionException
+  public DependencyNode resolveDependencyTree(final CollectRequestBuilder requestBuilder,
+      final RepositorySystemSession session, final RemoteRepository... repositories)
+      throws DependencyCollectionException
   {
+    final CollectRequest request = requestBuilder.getCollectRequest();
 
-    if (request instanceof CollectRequestBuilder) {
-      final CollectRequestBuilder requestBuilder = (CollectRequestBuilder) request;
-      final ModelBuildingRequest modelBuildingRequest = requestBuilder.getModelBuildingRequest();
-      Model model = requestBuilder.getModel();
-      if (model == null && modelBuildingRequest != null) {
-        model = resolveModel(request, session, modelBuildingRequest);
-      }
-      if (model != null) {
-        injectCollectionRequest(request, session, model);
-      }
+    final ModelBuildingRequest modelBuildingRequest = requestBuilder.getModelBuildingRequest();
+    Model model = requestBuilder.getModel();
+    if (model == null && modelBuildingRequest != null) {
+      model = resolveModel(request, session, modelBuildingRequest);
+    }
+    if (model != null) {
+      injectCollectionRequest(request, session, model);
     }
 
     return repositorySystem.collectDependencies(session, request).getRoot();
   }
 
   @Override
-  public DependencyNode resolveDependencyTree(final CollectRequest request, final RemoteRepository... repositories)
-      throws DependencyCollectionException
+  public DependencyNode resolveDependencyTree(final CollectRequestBuilder request,
+      final RemoteRepository... repositories) throws DependencyCollectionException
   {
     return resolveDependencyTree(request,
         assertNotNull(sessionProvider, "Repository system session provider not specified").get());

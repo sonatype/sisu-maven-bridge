@@ -16,25 +16,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.repository.Authentication;
-import org.sonatype.aether.repository.AuthenticationSelector;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.LocalRepositoryManager;
-import org.sonatype.aether.repository.MirrorSelector;
-import org.sonatype.aether.repository.ProxySelector;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.util.repository.DefaultAuthenticationSelector;
-import org.sonatype.aether.util.repository.DefaultMirrorSelector;
-import org.sonatype.aether.util.repository.DefaultProxySelector;
 import org.sonatype.sisu.maven.bridge.internal.RepositorySystemSessionWrapper;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.RemoteRepositoryBuilder;
 
 import com.google.common.collect.Maps;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.settings.Mirror;
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Repository;
@@ -45,6 +32,21 @@ import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
 import org.apache.maven.settings.building.SettingsBuilder;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.apache.maven.settings.building.SettingsBuildingRequest;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.repository.Authentication;
+import org.eclipse.aether.repository.AuthenticationSelector;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.MirrorSelector;
+import org.eclipse.aether.repository.ProxySelector;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
+import org.eclipse.aether.util.repository.DefaultAuthenticationSelector;
+import org.eclipse.aether.util.repository.DefaultMirrorSelector;
+import org.eclipse.aether.util.repository.DefaultProxySelector;
 
 /**
  * TODO
@@ -151,9 +153,9 @@ public class DefaultMavenSettings
         return new ProxySelector()
         {
           @Override
-          public org.sonatype.aether.repository.Proxy getProxy(final RemoteRepository repository) {
+          public org.eclipse.aether.repository.Proxy getProxy(final RemoteRepository repository) {
             if (proxySelector != null) {
-              final org.sonatype.aether.repository.Proxy proxy = proxySelector.getProxy(repository);
+              final org.eclipse.aether.repository.Proxy proxy = proxySelector.getProxy(repository);
               if (proxy != null) {
                 return proxy;
               }
@@ -230,8 +232,8 @@ public class DefaultMavenSettings
     if (servers != null && servers.size() > 0) {
       final DefaultAuthenticationSelector authenticationSelector = new DefaultAuthenticationSelector();
       for (Server server : servers) {
-        authenticationSelector.add(server.getId(), new Authentication(server.getUsername(), server.getPassword(),
-            server.getPrivateKey(), server.getPassphrase()));
+        authenticationSelector.add(server.getId(), new AuthenticationBuilder().addUsername(server.getUsername())
+            .addPassword(server.getPassword()).addPrivateKey(server.getPrivateKey(), server.getPassphrase()).build());
       }
       return authenticationSelector;
     }
@@ -246,8 +248,9 @@ public class DefaultMavenSettings
         // proxies might be present but deactivated
         // but for bridge resolution they would be still picked up and used
         if (proxy.isActive()) {
-          ps.add(new org.sonatype.aether.repository.Proxy(proxy.getProtocol(), proxy.getHost(), proxy.getPort(),
-              new Authentication(proxy.getUsername(), proxy.getPassword())), proxy.getNonProxyHosts());
+          ps.add(new org.eclipse.aether.repository.Proxy(proxy.getProtocol(), proxy.getHost(), proxy.getPort(),
+              new AuthenticationBuilder().addUsername(proxy.getUsername()).addPassword(proxy.getPassword()).build()),
+              proxy.getNonProxyHosts());
         }
       }
       return ps;
@@ -261,7 +264,8 @@ public class DefaultMavenSettings
       return null;
     }
 
-    return repositorySystem.newLocalRepositoryManager(new LocalRepository(localRepositoryPath));
+    return repositorySystem.newLocalRepositoryManager(MavenRepositorySystemUtils.newSession(), new LocalRepository(
+        localRepositoryPath));
   }
 
 }

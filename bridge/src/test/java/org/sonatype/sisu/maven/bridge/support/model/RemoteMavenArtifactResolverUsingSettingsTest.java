@@ -14,12 +14,12 @@ package org.sonatype.sisu.maven.bridge.support.model;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.sisu.litmus.testsupport.inject.InjectedTestSupport;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.artifact.RemoteMavenArtifactResolverUsingSettings;
 
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

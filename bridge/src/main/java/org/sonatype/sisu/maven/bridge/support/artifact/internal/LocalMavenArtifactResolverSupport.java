@@ -14,28 +14,40 @@ package org.sonatype.sisu.maven.bridge.support.artifact.internal;
 import java.io.File;
 import java.util.Arrays;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.resolution.ArtifactResult;
-import org.sonatype.aether.transfer.ArtifactNotFoundException;
-import org.sonatype.aether.util.layout.MavenDefaultLayout;
-import org.sonatype.aether.util.layout.RepositoryLayout;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.internal.impl.Maven2RepositoryLayoutFactory;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.spi.connector.layout.RepositoryLayout;
+import org.eclipse.aether.transfer.ArtifactNotFoundException;
+import org.eclipse.aether.transfer.NoRepositoryLayoutException;
 
 public abstract class LocalMavenArtifactResolverSupport
     extends MavenArtifactResolverSupport
 {
 
-  private final RepositoryLayout layout = new MavenDefaultLayout();
+  private final RepositoryLayout layout;
+
+  public LocalMavenArtifactResolverSupport() {
+    try {
+      layout = new Maven2RepositoryLayoutFactory().newInstance(MavenRepositorySystemUtils.newSession(),
+          new RemoteRepository.Builder(null, "default", null).build());
+    }
+    catch (final NoRepositoryLayoutException e) {
+      throw new IllegalStateException(e);
+    }
+  }
 
   @Override
   protected Artifact doResolve(final ArtifactRequest artifactRequest,
       final RepositorySystemSession session /* ignored */, final RemoteRepository... repositories /* ignored */)
       throws ArtifactResolutionException
   {
-    String path = layout.getPath(artifactRequest.getArtifact()).getPath();
+    String path = layout.getLocation(artifactRequest.getArtifact(), false).getPath();
 
     final File basedir = getBaseDir();
 
@@ -43,13 +55,8 @@ public abstract class LocalMavenArtifactResolverSupport
 
     if (!file.isFile()) {
       ArtifactResult artifactResult = new ArtifactResult(artifactRequest);
-      artifactResult.addException(new ArtifactNotFoundException(artifactRequest.getArtifact(), new RemoteRepository()
-      {
-        @Override
-        public String toString() {
-          return basedir.getAbsolutePath();
-        }
-      }));
+      artifactResult.addException(new ArtifactNotFoundException(artifactRequest.getArtifact(), null,
+          "Could not find artifact " + artifactRequest.getArtifact() + " in " + basedir.getAbsolutePath()));
       throw new ArtifactResolutionException(Arrays.asList(artifactResult));
     }
 

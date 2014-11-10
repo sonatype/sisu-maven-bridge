@@ -20,13 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.google.common.io.Closeables;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Repository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -130,7 +130,7 @@ public class ExportMojo
           + "'", e);
     }
     finally {
-      Closeables.closeQuietly(in);
+      IOUtil.close(in);
     }
     return properties;
   }
@@ -151,7 +151,7 @@ public class ExportMojo
           + "'", e);
     }
     finally {
-      Closeables.closeQuietly(out);
+      IOUtil.close(out);
     }
   }
 

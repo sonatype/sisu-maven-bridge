@@ -11,9 +11,9 @@
  */
 package org.sonatype.sisu.maven.bridge.support;
 
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
 
 /**
  * TODO
@@ -22,39 +22,39 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
  * @since 2.0
  */
 public class ArtifactRequestBuilder
-    extends ArtifactRequest
 {
+  private final ArtifactRequest artifactRequest = new ArtifactRequest();
 
   public static ArtifactRequestBuilder request() {
     return new ArtifactRequestBuilder();
   }
 
-  public ArtifactRequestBuilder artifact(final String coordinates) {
-    setArtifact(new DefaultArtifact(coordinates));
-    return this;
+  public ArtifactRequest artifact(final String coordinates) {
+    artifactRequest.setArtifact(new DefaultArtifact(coordinates));
+    return artifactRequest;
   }
 
-  public ArtifactRequestBuilder artifact(final String groupId, final String artifactId, final String version,
+  public ArtifactRequest artifact(final String groupId, final String artifactId, final String version,
       final String extension, final String classifier)
   {
-    setArtifact(new DefaultArtifact(groupId, artifactId, classifier, extension, version));
-    return this;
+    artifactRequest.setArtifact(new DefaultArtifact(groupId, artifactId, classifier, extension, version));
+    return artifactRequest;
   }
 
-  public ArtifactRequestBuilder artifact(final String groupId, final String artifactId, final String version,
+  public ArtifactRequest artifact(final String groupId, final String artifactId, final String version,
       final String extension)
   {
-    setArtifact(new DefaultArtifact(groupId, artifactId, extension, version));
-    return this;
+    artifactRequest.setArtifact(new DefaultArtifact(groupId, artifactId, extension, version));
+    return artifactRequest;
   }
 
-  public ArtifactRequestBuilder artifact(final String groupId, final String artifactId, final String version) {
+  public ArtifactRequest artifact(final String groupId, final String artifactId, final String version) {
     return artifact(groupId, artifactId, version, "jar");
   }
 
   public ArtifactRequestBuilder repository(final RemoteRepository... repositories) {
     for (RemoteRepository repository : repositories) {
-      addRepository(repository);
+      artifactRequest.addRepository(repository);
     }
     return this;
   }

@@ -28,7 +28,7 @@
   <name>${project.groupId}:${project.artifactId}</name>
   <packaging>pom</packaging>
 
-  <version>3.1.2-SNAPSHOT</version>
+  <version>3.2.0-SNAPSHOT</version>
 
   <inceptionYear>2011</inceptionYear>
   <url>https://github.com/sonatype/sisu-maven-bridge</url>
@@ -53,8 +53,9 @@
   </scm>
 
   <properties>
-    <maven.version>3.0.4</maven.version>
-    <maven-wagon.version>2.4</maven-wagon.version>
+    <maven.version>3.2.3</maven.version>
+    <aether.version>1.0.0.v20140518</aether.version>
+    <maven-wagon.version>2.7</maven-wagon.version>
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
   </properties>
@@ -67,15 +68,21 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-guice</artifactId>
-        <version>3.1.8</version>
+        <version>3.2.4</version>
       </dependency>
 
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.inject</artifactId>
-        <version>0.1.1</version>
+        <version>0.2.1</version>
       </dependency>
 
       <dependency>
@@ -149,33 +156,39 @@
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-api</artifactId>
-        <version>1.13.1</version>
+        <version>${aether.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-spi</artifactId>
-        <version>1.13.1</version>
+        <version>${aether.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-util</artifactId>
-        <version>1.13.1</version>
+        <version>${aether.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-impl</artifactId>
-        <version>1.13.1</version>
+        <version>${aether.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-connector-wagon</artifactId>
-        <version>1.13.1</version>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-connector-basic</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-transport-wagon</artifactId>
+        <version>${aether.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -254,15 +267,12 @@
           <artifactId>maven-bundle-plugin</artifactId>
           <configuration>
             <instructions>
-              <Bundle-RequiredExecutionEnvironment>
-                JavaSE-1.6,JavaSE-1.7
-              </Bundle-RequiredExecutionEnvironment>
+              <!-- relax range to account for guava versioning -->
+              <_consumer-policy>$(version;==)</_consumer-policy>
+              <!-- include all content in the output directory -->
               <Include-Resource>
-                {maven-resources},
-                META-INF/sisu=target/classes/META-INF/sisu
+                /=${project.build.outputDirectory},{maven-resources}
               </Include-Resource>
-              <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-              <_nouses>true</_nouses>
             </instructions>
           </configuration>
         </plugin>
@@ -280,7 +290,7 @@
         <plugin>
           <groupId>org.sonatype.plugins</groupId>
           <artifactId>sisu-maven-bridge-maven-plugin</artifactId>
-          <version>3.1.2-SNAPSHOT</version>
+          <version>3.2.0-SNAPSHOT</version>
         </plugin>
       </plugins>
     </pluginManagement>

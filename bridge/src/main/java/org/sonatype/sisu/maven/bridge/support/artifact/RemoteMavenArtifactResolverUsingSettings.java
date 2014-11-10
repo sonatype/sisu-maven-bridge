@@ -17,15 +17,16 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.sisu.maven.bridge.MavenArtifactResolver;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
+
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.spi.locator.ServiceLocator;
 
 @Named("remote-artifact-resolver-using-settings")
 @Singleton

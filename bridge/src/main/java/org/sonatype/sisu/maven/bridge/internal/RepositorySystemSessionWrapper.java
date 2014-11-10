@@ -13,22 +13,25 @@ package org.sonatype.sisu.maven.bridge.internal;
 
 import java.util.Map;
 
-import org.sonatype.aether.RepositoryCache;
-import org.sonatype.aether.RepositoryListener;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.SessionData;
-import org.sonatype.aether.artifact.ArtifactTypeRegistry;
-import org.sonatype.aether.collection.DependencyGraphTransformer;
-import org.sonatype.aether.collection.DependencyManager;
-import org.sonatype.aether.collection.DependencySelector;
-import org.sonatype.aether.collection.DependencyTraverser;
-import org.sonatype.aether.repository.AuthenticationSelector;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.LocalRepositoryManager;
-import org.sonatype.aether.repository.MirrorSelector;
-import org.sonatype.aether.repository.ProxySelector;
-import org.sonatype.aether.repository.WorkspaceReader;
-import org.sonatype.aether.transfer.TransferListener;
+import org.eclipse.aether.RepositoryCache;
+import org.eclipse.aether.RepositoryListener;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.SessionData;
+import org.eclipse.aether.artifact.ArtifactTypeRegistry;
+import org.eclipse.aether.collection.DependencyGraphTransformer;
+import org.eclipse.aether.collection.DependencyManager;
+import org.eclipse.aether.collection.DependencySelector;
+import org.eclipse.aether.collection.DependencyTraverser;
+import org.eclipse.aether.collection.VersionFilter;
+import org.eclipse.aether.repository.AuthenticationSelector;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.MirrorSelector;
+import org.eclipse.aether.repository.ProxySelector;
+import org.eclipse.aether.repository.WorkspaceReader;
+import org.eclipse.aether.resolution.ArtifactDescriptorPolicy;
+import org.eclipse.aether.resolution.ResolutionErrorPolicy;
+import org.eclipse.aether.transfer.TransferListener;
 
 /**
  * TODO
@@ -43,6 +46,11 @@ public class RepositorySystemSessionWrapper
 
   public RepositorySystemSessionWrapper(final RepositorySystemSession wrapped) {
     this.wrapped = wrapped;
+  }
+
+  @Override
+  public ArtifactDescriptorPolicy getArtifactDescriptorPolicy() {
+    return wrapped.getArtifactDescriptorPolicy();
   }
 
   @Override
@@ -121,6 +129,11 @@ public class RepositorySystemSessionWrapper
   }
 
   @Override
+  public ResolutionErrorPolicy getResolutionErrorPolicy() {
+    return wrapped.getResolutionErrorPolicy();
+  }
+
+  @Override
   public Map<String, String> getSystemProperties() {
     return wrapped.getSystemProperties();
   }
@@ -141,33 +154,23 @@ public class RepositorySystemSessionWrapper
   }
 
   @Override
+  public VersionFilter getVersionFilter() {
+    return wrapped.getVersionFilter();
+  }
+
+  @Override
   public WorkspaceReader getWorkspaceReader() {
     return wrapped.getWorkspaceReader();
   }
 
   @Override
-  public boolean isIgnoreInvalidArtifactDescriptor() {
-    return wrapped.isIgnoreInvalidArtifactDescriptor();
-  }
-
-  @Override
-  public boolean isIgnoreMissingArtifactDescriptor() {
-    return wrapped.isIgnoreMissingArtifactDescriptor();
-  }
-
-  @Override
-  public boolean isNotFoundCachingEnabled() {
-    return wrapped.isNotFoundCachingEnabled();
+  public boolean isIgnoreArtifactDescriptorRepositories() {
+    return wrapped.isIgnoreArtifactDescriptorRepositories();
   }
 
   @Override
   public boolean isOffline() {
     return wrapped.isOffline();
-  }
-
-  @Override
-  public boolean isTransferErrorCachingEnabled() {
-    return wrapped.isTransferErrorCachingEnabled();
   }
 
 }

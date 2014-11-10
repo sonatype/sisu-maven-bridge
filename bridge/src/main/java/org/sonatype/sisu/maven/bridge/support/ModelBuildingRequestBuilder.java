@@ -13,12 +13,12 @@ package org.sonatype.sisu.maven.bridge.support;
 
 import java.io.File;
 
-import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.sisu.maven.bridge.support.model.internal.MavenModelResolverSupport.ArtifactModelSource;
 
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.eclipse.aether.artifact.Artifact;
 
 import static org.sonatype.sisu.maven.bridge.support.ArtifactRequestBuilder.request;
 

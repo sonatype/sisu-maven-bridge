@@ -17,16 +17,17 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.spi.locator.ServiceLocator;
 import org.sonatype.sisu.maven.bridge.MavenDependencyTreeResolver;
+import org.sonatype.sisu.maven.bridge.support.CollectRequestBuilder;
 import org.sonatype.sisu.maven.bridge.support.MavenSettings;
 import org.sonatype.sisu.maven.bridge.support.MavenSettingsFactory;
 import org.sonatype.sisu.maven.bridge.support.model.RemoteMavenModelResolverUsingSettings;
+
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.spi.locator.ServiceLocator;
 
 @Named("remote-dependency-tree-resolver-using-settings")
 @Singleton
@@ -55,11 +56,13 @@ public class RemoteMavenDependencyTreeResolverUsingSettings
   }
 
   @Override
-  public DependencyNode resolveDependencyTree(final CollectRequest request, final RepositorySystemSession session,
-      final RemoteRepository... repositories) throws DependencyCollectionException
+  public DependencyNode resolveDependencyTree(final CollectRequestBuilder requestBuilder,
+      final RepositorySystemSession session, final RemoteRepository... repositories)
+      throws DependencyCollectionException
   {
     final MavenSettings mavenSettings = mavenSettingsFactory.create();
-    return super.resolveDependencyTree(mavenSettings.inject(request), mavenSettings.inject(session), repositories);
+    mavenSettings.inject(requestBuilder.getCollectRequest());
+    return super.resolveDependencyTree(requestBuilder, mavenSettings.inject(session), repositories);
   }
 
 }

@@ -11,12 +11,11 @@
  */
 package org.sonatype.sisu.maven.bridge.internal;
 
-import org.sonatype.aether.connector.wagon.WagonProvider;
-
 import com.google.common.base.Throwables;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.http.HttpWagon;
+import org.eclipse.aether.transport.wagon.WagonProvider;
 
 /**
  * Simple http/https wagon provider using wagon-http.
