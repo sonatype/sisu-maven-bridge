@@ -34,6 +34,7 @@ public abstract class LocalMavenArtifactResolverSupport
 
   public LocalMavenArtifactResolverSupport() {
     try {
+      // MavenDefaultLayout is no longer visible, so we have to take the long way round to access it
       layout = new Maven2RepositoryLayoutFactory().newInstance(MavenRepositorySystemUtils.newSession(),
           new RemoteRepository.Builder(null, "default", null).build());
     }
